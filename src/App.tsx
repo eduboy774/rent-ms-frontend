@@ -22,6 +22,7 @@ import House from "./pages/rent/house/house";
 import User from "./pages/rent/users/users";
 import Room from "./pages/rent/rooms/room";
 import Notification from "./pages/rent/notifications/notification";
+import RoomHouseRentals from "./pages/rent/room-house-rentals/room-house-rentals";
 
 export default function App() {
   return (
@@ -41,6 +42,7 @@ export default function App() {
              <Route path="/houses"  element={<House/>}/>
              <Route path="/rooms"  element={<Room/>}/>
              <Route path="/notifications"  element={<Notification/>}/>
+              <Route path="/room-rentals"  element={<RoomHouseRentals/>}/>
 
 
 
