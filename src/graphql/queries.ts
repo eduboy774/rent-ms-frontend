@@ -155,3 +155,96 @@ query GetRooms($filtering: RoomFilteringInputObject) {
   }
 }
 `;
+
+
+export const GET_NOTIFICATIONS = gql
+`
+query GetNotification($filtering: NotificationFilteringInputObject) {
+  getNotification(filtering: $filtering) {
+    data {
+      uuid
+      medium
+      payload
+      status
+      attempts
+      errorMessage
+      isActive
+    }
+    response {
+      id
+      status
+      code
+      message
+    }
+  }
+}
+`;
+
+
+export const GET_ROOM_RENTALS = gql
+`
+query GetRoomRentals($filtering: RoomRentalFilteringInputObject) {
+  getRoomRentals(filtering: $filtering) {
+    data {
+      id
+      uuid
+      room {
+        id
+        uuid
+        houseInfo {
+          id
+          uuid
+          name
+          ownerInfo {
+            id
+            profileUniqueId
+            userFirstName
+            userLastName
+            userEmail
+            profilePhone
+            profileTitle
+            profilePhoto
+            profileIsActive
+            profileType
+            profileLevel
+            profileGender
+          }
+          address
+          description
+          isActive
+        }
+        name
+        number
+        capacity
+        pricePerNight
+        isActive
+      }
+      renter {
+        id
+        profileUniqueId
+        userFirstName
+        userLastName
+        userEmail
+        profilePhone
+        profileTitle
+        profilePhoto
+        profileIsActive
+        profileType
+        profileLevel
+        profileGender
+      }
+      period
+      status
+      createdAt
+      isActive
+    }
+    response {
+      id
+      status
+      code
+      message
+    }
+  }
+}
+
+`;

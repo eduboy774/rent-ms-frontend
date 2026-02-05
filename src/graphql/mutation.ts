@@ -303,8 +303,150 @@ mutation DeleteRoomMutation($uuid: String) {
 `
 
 
+export const CREATE_ROOM_RENTAL = gql
+`
+mutation CreateRoomRentalMutation($input: RoomRentalInputObject) {
+  createRoomRentalMutation(input: $input) {
+    response {
+      id
+      status
+      code
+      message
+    }
+    data {
+      id
+      uuid
+      room {
+        id
+        uuid
+        houseInfo {
+          id
+          uuid
+          name
+          ownerInfo {
+            id
+            profileUniqueId
+            userFirstName
+            userLastName
+            userEmail
+            profilePhone
+            profileTitle
+            profilePhoto
+            profileIsActive
+            profileType
+            profileLevel
+            profileGender
+          }
+          address
+          description
+          isActive
+        }
+        name
+        number
+        capacity
+        pricePerNight
+        isActive
+      }
+      renter {
+        id
+        profileUniqueId
+        userFirstName
+        userLastName
+        userEmail
+        profilePhone
+        profileTitle
+        profilePhoto
+        profileIsActive
+        profileType
+        profileLevel
+        profileGender
+      }
+      period
+      status
+      createdAt
+      isActive
+    }
+  }
+}
+`;
 
+export const UPDATE_ROOM_RENTAL = gql
+`
+mutation UpdateRoomRentalMutation($input: RoomRentalInputObject) {
+  updateRoomRentalMutation(input: $input) {
+    response {
+      id
+      status
+      code
+      message
+    }
+    data {
+      id
+      uuid
+      room {
+        id
+        uuid
+        houseInfo {
+          id
+          uuid
+          name
+          ownerInfo {
+            id
+            profileUniqueId
+            userFirstName
+            userLastName
+            userEmail
+            profilePhone
+            profileTitle
+            profilePhoto
+            profileIsActive
+            profileType
+            profileLevel
+            profileGender
+          }
+          address
+          description
+          isActive
+        }
+        name
+        number
+        capacity
+        pricePerNight
+        isActive
+      }
+      renter {
+        id
+        profileUniqueId
+        userFirstName
+        userLastName
+        userEmail
+        profilePhone
+        profileTitle
+        profilePhoto
+        profileIsActive
+        profileType
+        profileLevel
+        profileGender
+      }
+      period
+      status
+      createdAt
+      isActive
+    }
+  }
+}
+`;
 
-
-
-
+export const ACTIVATE_OR_DEACTIVATE_ROOM_RENTAL = gql
+`
+mutation DeleteRoomRentalMutation($uuid: String!) {
+  deleteRoomRentalMutation(uuid: $uuid) {
+    response {
+      id
+      status
+      code
+      message
+    }
+  }
+}
+`
