@@ -6,7 +6,6 @@ export interface House {
   uuid: string;
   name: string;
   ownerInfo: User;
-  address: string;
   description: string;
   isActive: boolean;
   ownerUuid:string | null;
@@ -27,7 +26,6 @@ export interface HouseInputObject {
   uuid?: string | null;
   ownerUuid?: string | null;
   name?: string | null;
-  address?: string | null;
   description?: string | null;
 }
 

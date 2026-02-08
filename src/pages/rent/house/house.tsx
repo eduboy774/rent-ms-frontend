@@ -16,8 +16,6 @@ export default function House() {
   const {isOpen, openModal, closeModal } = useModal();  
   const [message, setMessage] = useState("");
   const [houseName, setHouseName] = useState("");
-  const [houseAddress, setHouseAddress] = useState("");
-  const [attachment, setAttachment] = useState<any>(null);
   const [ownerUuid, setOwnerUuid] = useState<string | null>(null);
   
   const [houses, setHouses] = useState<House[]>([]);
@@ -98,16 +96,16 @@ const { loading:LoadingHouse,error:HouseError, data:HouseData } = useQuery(GET_H
       uuid: null,
       name:houseName,
       description: message,
-      address: houseAddress,
       ownerUuid: ownerUuid,
     };
 
- if(houseName && message && houseAddress){
+ if(houseName && message){
      try {
 
     const { data } = await createHouse({ variables: { input } });
     const responceHouseData:any = data?.createHouseMutation;
     const newHouse = data?.createHouseMutation.data;
+    console.log("Create House Response:", newHouse);
 
     if (responceHouseData?.response?.code === 9000 && newHouse ) {
          success(responceHouseData.response.message);
@@ -197,10 +195,6 @@ const { loading:LoadingHouse,error:HouseError, data:HouseData } = useQuery(GET_H
       setHouseName={setHouseName}
       message={message}
       setMessage={setMessage}
-      attachment ={attachment}
-      setAttachment ={setAttachment}
-      houseAddress={houseAddress}
-      setHouseAddress ={setHouseAddress}
       owners ={options}
       ownerUuid={ownerUuid}
       setOwnerUuid ={setOwnerUuid}  

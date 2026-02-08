@@ -28,7 +28,7 @@ export default function HouseTable({ houses, onDelete }: HouseTableProps) {
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Address
+                Description
               </TableCell>
               <TableCell
                 isHeader
@@ -62,7 +62,7 @@ export default function HouseTable({ houses, onDelete }: HouseTableProps) {
                 </TableCell>
 
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {house.address}
+                  {house.description}
                 </TableCell>
 
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">

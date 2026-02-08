@@ -1,5 +1,5 @@
 import { ResponseObject } from "./base";
-import { Rooms } from "./rooms";
+import { Rooms } from "./renters";
 import { User } from "./users";
 
 /* =====================

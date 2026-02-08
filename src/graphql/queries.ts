@@ -97,7 +97,6 @@ query GetHouses($filtering: HouseFilteringInputObject) {
         profileLevel
         profileGender
       }
-      address
       description
       isActive
     }
@@ -112,38 +111,16 @@ query GetHouses($filtering: HouseFilteringInputObject) {
 `
 
 
-export const GET_ROOMS = gql
+export const GET_RENTERS = gql
 `
-query GetRooms($filtering: RoomFilteringInputObject) {
-  getRooms(filtering: $filtering) {
+query GetRenters($filtering: RenterFilteringInputObject) {
+  getRenters(filtering: $filtering) {
     data {
+      id
       uuid
-      houseInfo {
-        id
-        uuid
-        name
-        ownerInfo {
-          id
-          profileUniqueId
-          userFirstName
-          userLastName
-          userEmail
-          profilePhone
-          profileTitle
-          profilePhoto
-          profileIsActive
-          profileType
-          profileLevel
-          profileGender
-        }
-        address
-        description
-        isActive
-      }
-      name
-      number
-      capacity
-      pricePerNight
+      fullName
+      phoneNumber
+      nidaNumber
       isActive
     }
     response {

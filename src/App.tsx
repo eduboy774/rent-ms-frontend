@@ -20,9 +20,9 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import House from "./pages/rent/house/house";
 import User from "./pages/rent/users/users";
-import Room from "./pages/rent/rooms/room";
 import Notification from "./pages/rent/notifications/notification";
 import RoomHouseRentals from "./pages/rent/room-house-rentals/room-house-rentals";
+import Renter from "./pages/rent/renters/renter";
 
 export default function App() {
   return (
@@ -40,7 +40,7 @@ export default function App() {
 
              <Route path="/users"  element={<User/>}/>
              <Route path="/houses"  element={<House/>}/>
-             <Route path="/rooms"  element={<Room/>}/>
+             <Route path="/renters"  element={<Renter/>}/>
              <Route path="/notifications"  element={<Notification/>}/>
               <Route path="/room-rentals"  element={<RoomHouseRentals/>}/>
 

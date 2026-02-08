@@ -13,7 +13,7 @@ export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [userName,setUserName] = useState('edwin.pantaleo@lands.go.tz');
-  const [password,setPassword] = useState('edwinB96$');
+  const [password,setPassword] = useState('ega@12345');
   const { authenticate } = useSignIn();
 
   const authenticateUser: () => void = () => {

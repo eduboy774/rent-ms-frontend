@@ -30,7 +30,6 @@ mutation CreateHouseMutation($input: HouseInputObject) {
         profileLevel
         profileGender
       }
-      address
       description
       isActive
     }
@@ -198,54 +197,10 @@ mutation DeleteUsersMutation($profileUniqueId: String!) {
 }
 `
 
-export const CREATE_ROOM = gql
+export const CREATE_RENTER = gql
 `
-mutation CreateRoomMutation($input: RoomInputObject) {
-  createRoomMutation(input: $input) {
-    response {
-      id
-      status
-      code
-      message
-    }
-    data {
-      uuid
-      houseInfo {
-        id
-        uuid
-        name
-        ownerInfo {
-          id
-          profileUniqueId
-          userFirstName
-          userLastName
-          userEmail
-          profilePhone
-          profileTitle
-          profilePhoto
-          profileIsActive
-          profileType
-          profileLevel
-          profileGender
-        }
-        address
-        description
-        isActive
-      }
-      name
-      number
-      capacity
-      pricePerNight
-      isActive
-    }
-  }
-}
-`
-
-export const UPDATE_ROOM = gql
-`
-mutation UpdateRoomMutation($input: RoomInputObject) {
-  updateRoomMutation(input: $input) {
+mutation CreateRenterMutation($input: RenterInputObject) {
+  createRenterMutation(input: $input) {
     response {
       id
       status
@@ -255,32 +210,31 @@ mutation UpdateRoomMutation($input: RoomInputObject) {
     data {
       id
       uuid
-      houseInfo {
-        id
-        uuid
-        name
-        ownerInfo {
-          id
-          profileUniqueId
-          userFirstName
-          userLastName
-          userEmail
-          profilePhone
-          profileTitle
-          profilePhoto
-          profileIsActive
-          profileType
-          profileLevel
-          profileGender
-        }
-        address
-        description
-        isActive
-      }
-      name
-      number
-      capacity
-      pricePerNight
+      fullName
+      phoneNumber
+      nidaNumber
+      isActive
+    }
+  }
+}
+`
+
+export const UPDATE_RENTER = gql
+`
+mutation UpdateRenterMutation($input: RenterInputObject) {
+  updateRenterMutation(input: $input) {
+    response {
+      id
+      status
+      code
+      message
+    }
+    data {
+      id
+      uuid
+      fullName
+      phoneNumber
+      nidaNumber
       isActive
     }
   }
@@ -288,10 +242,10 @@ mutation UpdateRoomMutation($input: RoomInputObject) {
 `
 
 
-export const ACTIVATE_OR_DEACTIVATE_ROOM = gql
+export const ACTIVATE_OR_DEACTIVATE_RENTER = gql
 `
-mutation DeleteRoomMutation($uuid: String) {
-  deleteRoomMutation(uuid: $uuid) {
+mutation DeleteRenterMutation($uuid: String) {
+  deleteRenterMutation(uuid: $uuid) {
     response {
       id
       status

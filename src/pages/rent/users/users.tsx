@@ -103,11 +103,12 @@ export default function UserPage() {
       const { data } = await createUser({ variables: { input } });
       const response = data?.createUserMutation?.response;
       const newUser = data?.createUserMutation?.data?.userProfile;
-
+      
       if (response?.code === 9000 && newUser) {
         success(response.message);
         setUsers((prev) => [newUser, ...prev]);
         closeModal();
+        // this.a
       } else {
         error(response?.message || "Failed to create user");
       }
