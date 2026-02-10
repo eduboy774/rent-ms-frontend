@@ -1,12 +1,12 @@
 import Badge from "../../../components/ui/badge/Badge";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../../components/ui/table";
-import { RoomRental } from "../../../types/room-house-rentals";
+import { HouseRental } from "../../../types/house-rentals";
 
 interface TableProps {
-  roomRentals: RoomRental[];
+  houseRentals: HouseRental[];
 }
 
-export default function RoomHouseRentalsTable({ roomRentals }: TableProps) {
+export default function HouseRentalsTable({ houseRentals }: TableProps) {
   
 
   return (
@@ -51,32 +51,38 @@ export default function RoomHouseRentalsTable({ roomRentals }: TableProps) {
 
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-            {roomRentals.map((roomRental) => (
-              <TableRow key={roomRental.uuid}>
+            {houseRentals.map((houseRental) => (
+              <TableRow key={houseRental.uuid}>
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                    {roomRental.room.name}
+                    {houseRental.house.name}
                   </span>
                 </TableCell>
 
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                    {roomRental.renter.userFirstName} {roomRental.renter.userLastName}
+                    {houseRental.owner.userFirstName} {houseRental.owner.userLastName}
+                  </span>
+                </TableCell>
+
+                <TableCell className="px-5 py-4 sm:px-6 text-start">
+                  <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                    {houseRental.renter.fullName}
                   </span>
                 </TableCell>
 
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {roomRental.status}
+                  {houseRental.status}
                 </TableCell>
 
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {roomRental.period}
+                  {houseRental.duration}
                 </TableCell>
 
 
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  <Badge size="sm" color={roomRental.isActive ? "success" : "error"}>
-                    {roomRental.isActive ? "Active" : "Inactive"}
+                  <Badge size="sm" color={houseRental.isActive ? "success" : "error"}>
+                    {houseRental.isActive ? "Active" : "Inactive"}
                   </Badge>
                 </TableCell>
 

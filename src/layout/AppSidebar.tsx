@@ -43,7 +43,7 @@ const navItems: NavItem[] = [
       { name: "Users", path: "/users", pro: false },
       { name: "Houses", path: "/houses", pro: false },
       { name: "Renters", path: "/renters", pro: false },
-      { name: "House Rentals", path: "/room-rentals", pro: false },
+      { name: "House Rentals", path: "/house-rentals", pro: false },
       { name: "Notification", path: "/notifications", pro: false },
       { name: "Payment", path: "/payments", pro: false }
     ],

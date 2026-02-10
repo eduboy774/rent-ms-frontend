@@ -21,7 +21,7 @@ import Home from "./pages/Dashboard/Home";
 import House from "./pages/rent/house/house";
 import User from "./pages/rent/users/users";
 import Notification from "./pages/rent/notifications/notification";
-import RoomHouseRentals from "./pages/rent/room-house-rentals/room-house-rentals";
+import RoomHouseRentals from "./pages/rent/house-rentals/room-house-rentals";
 import Renter from "./pages/rent/renters/renter";
 
 export default function App() {
@@ -42,7 +42,7 @@ export default function App() {
              <Route path="/houses"  element={<House/>}/>
              <Route path="/renters"  element={<Renter/>}/>
              <Route path="/notifications"  element={<Notification/>}/>
-              <Route path="/room-rentals"  element={<RoomHouseRentals/>}/>
+              <Route path="/house-rentals"  element={<RoomHouseRentals/>}/>
 
 
 

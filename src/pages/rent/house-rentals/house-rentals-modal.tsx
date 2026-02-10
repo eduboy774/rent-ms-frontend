@@ -1,9 +1,6 @@
 import { Modal } from "../../../components/ui/modal";
 import Button from "../../../components/ui/button/Button";
-import Input from "../../../components/form/input/InputField";
 import Label from "../../../components/form/Label";
-import TextArea from "../../../components/form/input/TextArea";
-import FileInputExample from "../../../components/form/form-elements/FileInputExample";
 import Select from "../../../components/form/Select";
 
 type SelectOption = {
@@ -11,43 +8,44 @@ type SelectOption = {
   value: string;
 };
 
-type HouseModalProps = {
+type HouseRentalModalProps = {
   isOpen: boolean;
   onClose: () => void;
   houseName: string;
   setHouseName: (val: string) => void;
   message: string;
   setMessage: (val: string) => void;
-  attachment:any;
-  setAttachment:(val:string) => void;
-  houseAddress: string;
-  setHouseAddress: (val: string) => void;
-  owners: SelectOption[];       
-  ownerUuid: string | null;      
+  owners: SelectOption[];     
+  renters: SelectOption[];
+  houses:SelectOption [];
+  renterUuid: string | null;
+  ownerUuid: string | null;
+  houseUuid:string | null;
+  setHouseUuid:(val:string) => void;
+  setRenterUuid: (val: string) => void;  
   setOwnerUuid: (val: string) => void;
   onSave: () => void;
 };
 
-export default function HouseModal({
+
+export default function HouseRentalModal({
   isOpen,
   onClose,
   houseName,
   setHouseName,
   message,
   setMessage,
-  attachment,
-  setAttachment,
-  houseAddress,
-  setHouseAddress,
   owners,
   ownerUuid,
   setOwnerUuid,
+  renters,
+  houses,
+  renterUuid,
+  setRenterUuid,
+  setHouseUuid,
+  houseUuid,
   onSave,
-}: HouseModalProps) {
-
-  const handleFileUpload = (uploadedAttachment: any) => {
-    setAttachment(uploadedAttachment);
-  };
+}: HouseRentalModalProps) {
 
 
 
@@ -63,14 +61,7 @@ export default function HouseModal({
         <form className="flex flex-col">
           <div className="custom-scrollbar overflow-y-auto px-2 pb-3">
             <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-              <div className="col-span-2">
-                <Label>Housee Name</Label>
-                <Input
-                  type="text"
-                  value={houseName}
-                  onChange={(e) => setHouseName(e.target.value)}
-                />
-              </div>
+              
               <div className="col-span-2">
                 <Label>Select Owner</Label>
               <Select
@@ -79,26 +70,24 @@ export default function HouseModal({
                 onChange={setOwnerUuid}
               />
               </div>
+
               <div className="col-span-2">
-                <Label>House Description</Label>
-                <TextArea
-                  value={message}
-                  onChange={(val) => setMessage(val)}
-                  rows={2}
-                />
-              </div>
-              <div className="col-span-2">
-              <FileInputExample onFileUpload={handleFileUpload} />
+                <Label>Select Renter</Label>
+              <Select
+                options={renters}
+                placeholder="Select Renter"
+                onChange={setRenterUuid}
+              />
               </div>
                <div className="col-span-2">
-                <Label>House Address</Label>
-                <Input
-                  type="text"
-                  value={houseAddress}
-                  onChange={(e) => setHouseAddress(e.target.value)}
-                />
+                <Label>Select House</Label>
+              <Select
+                options={houses}
+                placeholder="Select Renter"
+                onChange={setHouseUuid}
+              />
               </div>
-
+              
             </div>
           </div>
           <div className="flex items-center gap-3 px-2 lg:justify-end">

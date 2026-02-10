@@ -158,45 +158,36 @@ query GetNotification($filtering: NotificationFilteringInputObject) {
 `;
 
 
-export const GET_ROOM_RENTALS = gql
+export const GET_HOUSE_RENTALS = gql
 `
-query GetRoomRentals($filtering: RoomRentalFilteringInputObject) {
-  getRoomRentals(filtering: $filtering) {
+query GetHouseRentals($filtering: HouseRentalFilteringInputObject) {
+  getHouseRentals(filtering: $filtering) {
     data {
       id
       uuid
-      room {
+      house {
         id
         uuid
-        houseInfo {
-          id
-          uuid
-          name
-          ownerInfo {
-            id
-            profileUniqueId
-            userFirstName
-            userLastName
-            userEmail
-            profilePhone
-            profileTitle
-            profilePhoto
-            profileIsActive
-            profileType
-            profileLevel
-            profileGender
-          }
-          address
-          description
-          isActive
-        }
         name
-        number
-        capacity
-        pricePerNight
+        ownerInfo {
+          id
+          profileUniqueId
+          userFirstName
+          userLastName
+          userEmail
+          profilePhone
+          profileTitle
+          profilePhoto
+          profileIsActive
+          profileType
+          profileLevel
+          profileGender
+        }
+        address
+        description
         isActive
       }
-      renter {
+      owner {
         id
         profileUniqueId
         userFirstName
@@ -210,8 +201,21 @@ query GetRoomRentals($filtering: RoomRentalFilteringInputObject) {
         profileLevel
         profileGender
       }
-      period
+      renter {
+        id
+        uuid
+        fullName
+        phoneNumber
+        nidaNumber
+        isActive
+      }
+      duration
+      noticePeriodDays
+      amount
+      autoRenew
       status
+      expiredAt
+      terminatedAt
       createdAt
       isActive
     }

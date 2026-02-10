@@ -200,6 +200,7 @@ const { loading:LoadingHouse,error:HouseError, data:HouseData } = useQuery(GET_H
       setOwnerUuid ={setOwnerUuid}  
       onSave={handleSave}
       />
+      
     </div>
   );
 }
