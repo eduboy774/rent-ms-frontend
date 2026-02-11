@@ -1,15 +1,18 @@
 import { useModal } from "../../../hooks/useModal";
 import { useState } from "react";
 import { GET_HOUSE_RENTALS, GET_HOUSES, GET_RENTERS, GET_USERS } from "../../../graphql/queries";
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { Audio, BallTriangle } from 'react-loader-spinner'
-import { HouseRental, HouseRentalFilteringInputObject } from "../../../types/house-rentals";
+import { CreateHouseRentalMutation, CreateHouseRentalVars, HouseRental, HouseRentalFilteringInputObject, HouseRentalInputObject } from "../../../types/house-rentals";
 import RoomHouseRentalsTable from "./house-rentals-table";
 import { UserFilteringInputObject } from "../../../types/users";
 import { useToast } from "../../../components/notifications/useToast";
-import { HouseFilteringInputObject, HouseInputObject } from "../../../types/house";
+import { HouseFilteringInputObject } from "../../../types/house";
 import HouseRentalModal from "./house-rentals-modal";
 import { RenterFilteringInputObject } from "../../../types/renters";
+import ConfirmToast from "../../../components/notifications/confirmation";
+import { toast } from "react-toastify";
+import { ACTIVATE_OR_DEACTIVATE_HOUSE_RENTAL, CREATE_HOUSE_RENTAL } from "../../../graphql/mutation";
 
 export default function RoomHouseRentals() {
   
@@ -18,13 +21,23 @@ export default function RoomHouseRentals() {
   const [ownerUuid, setOwnerUuid] = useState<string | null>(null);
   const [houseUuid,setHouseUid] = useState<string | null>(null);
   const [renterUuid, setRenterUuid] = useState<string | null>(null);
+  const [autoRenew, setAutoRenew] = useState<boolean | false>(false);
   const [owners, setOwners] = useState<any[]>([]);
   const [renters, setRenters] = useState<any[]>([]);
   const [houses,setHouses] = useState<any[]>([])
-  const [houseName, setHouseName] = useState("");
-  const [message, setMessage] = useState("");
+  const [amount, setAmount] = useState<number | null>(null);
+  const [noticePeriodDays, setNoticePeriodDays] = useState<number | null>(null);
+
+
+  const [duration, setDuration] = useState("");
+  const [status, setStatus] = useState("");
   const { success,error,info } = useToast();
 
+  const [createHouseRental] = useMutation<CreateHouseRentalMutation, CreateHouseRentalVars>(CREATE_HOUSE_RENTAL);
+  const [deleteHouseRental] = useMutation(ACTIVATE_OR_DEACTIVATE_HOUSE_RENTAL);
+  
+
+  
   const defaultFilter: HouseRentalFilteringInputObject = {
   uuid: null,
   houseUuid: null,
@@ -83,7 +96,7 @@ const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE
       useQuery(GET_RENTERS, {
       variables: { filtering: defaultRenterFilter },
       onCompleted: (data) => {
-        setHouses(data?.getRenters?.data || []);
+        setRenters(data?.getRenters?.data || []);
       }
     });
 
@@ -95,63 +108,70 @@ const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE
   });
 
 
-    //  const handleDelete = (uuid: string) => {
-    //   const toastId = toast(
-    //     <ConfirmToast
-    //       onConfirm={async () => {
-    //         toast.dismiss(toastId);
-    //         try {
-    //           const { data } = await deleteHouse({ variables: { uuid } });
-    //           const response = data?.deleteHouseMutation?.response;
+     const handleDelete = (uuid: string) => {
+      const toastId = toast(
+        <ConfirmToast
+          onConfirm={async () => {
+            toast.dismiss(toastId);
+            try {
+              const { data } = await deleteHouseRental({ variables: { uuid } });
+              const response = data?.deleteHouseRentalMutation?.response;
+              console.log(response);
+              
     
-    //           if (response?.code === 9000) {
-    //             setHouseRentals((prev) => prev.filter((pkg) => pkg.uuid !== uuid));
-    //             toast.success("House deleted successfully.");
-    //           } else {
-    //             toast.error(response?.message || "Failed to delete house.");
-    //           }
-    //         } catch (err) {
-    //           toast.error("An error occurred while deleting.");
-    //         }
-    //       }}
-    //       onCancel={() => toast.dismiss(toastId)}
-    //     />
-    //   );
-    // };
+              if (response?.code === 9000) {
+                setHouseRentals((prev) => prev.filter((pkg) => pkg.uuid !== uuid));
+                toast.success("House Rental Delete successfully.");
+              } else {
+                toast.error(response?.message || "Failed to delete house rental.");
+              }
+            } catch (err) {
+              toast.error("An error occurred while deleting.");
+            }
+          }}
+          onCancel={() => toast.dismiss(toastId)}
+        />
+      );
+    };
     
     
     
       const handleSave = async () => {
         
-         if (houseName == "" || message =="" ){
-              info('House Name Description is Empty')
+         if (amount == 0 || status =="" ){
+              info('House Rental Description is Empty')
          }
     
-          const input: HouseInputObject = {
+          const input: HouseRentalInputObject = {
           uuid: null,
-          name:houseName,
-          description: message,
+          amount:amount,
+          status: status,
+          duration:duration,
+          autoRenew:autoRenew,
           ownerUuid: ownerUuid,
+          houseUuid:houseUuid,
+          renterUuid:renterUuid,
+
         };
     
-     if(houseName && message){
-      //    try {
+     if(amount && status){
+         try {
     
-      //   const { data } = await createHouse({ variables: { input } });
-      //   const responceHouseData:any = data?.createHouseMutation;
-      //   const newHouse = data?.createHouseMutation.data;
-      //   console.log("Create House Response:", newHouse);
+        const { data } = await createHouseRental({ variables: { input } });
+        const responceHouseData:any = data?.createHouseRentalMutation;
+        const newHouse = data?.createHouseRentalMutation.data;
+        console.log("Create House Rental Response:", newHouse);
     
-      //   if (responceHouseData?.response?.code === 9000 && newHouse ) {
-      //        success(responceHouseData.response.message);
-      //        setHouseRentals((prev) => [newHouse, ...prev]);
-      //       closeModal();
-      //   } else {
-      //     error(responceHouseData.response.message)
-      //   }
-      // } catch (err) {
-      //       console.error("Mutation error:",err);
-      // }
+        if (responceHouseData?.response?.code === 9000 && newHouse ) {
+             success(responceHouseData.response.message);
+             setHouseRentals((prev) => [newHouse, ...prev]);
+            closeModal();
+        } else {
+          error(responceHouseData.response.message)
+        }
+      } catch (err) {
+            console.error("Mutation error:",err);
+      }
     
         closeModal();
       };
@@ -187,7 +207,7 @@ const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE
       <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h2 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-             Room House Rentals Information
+             House Rentals Information
           </h2>
         </div>
 
@@ -220,14 +240,20 @@ const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE
         </button>
       </div>
     
-    <RoomHouseRentalsTable houseRentals={houseRentals} />
+    <RoomHouseRentalsTable houseRentals={houseRentals} onDelete={handleDelete} />
     <HouseRentalModal
           isOpen={isOpen}
           onClose={closeModal}
-          houseName={houseName}
-          setHouseName={setHouseName}
-          message={message}
-          setMessage={setMessage}
+          amount={amount}
+          noticePeriodDays={noticePeriodDays}
+          autoRenew={autoRenew}
+          setAutoRenew={setAutoRenew}
+          duration={duration}
+          setDuration={setDuration}
+          setAmount={setAmount}
+          setNoticePeriodDays={setNoticePeriodDays}
+          status={status}
+          setStatus={setStatus}
           owners ={options}
           renters={renterOptions}
           ownerUuid={ownerUuid}

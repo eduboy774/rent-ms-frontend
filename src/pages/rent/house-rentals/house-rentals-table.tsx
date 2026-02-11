@@ -1,12 +1,14 @@
 import Badge from "../../../components/ui/badge/Badge";
+import Button from "../../../components/ui/button/Button";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../../components/ui/table";
 import { HouseRental } from "../../../types/house-rentals";
 
 interface TableProps {
   houseRentals: HouseRental[];
+    onDelete: (uuid: string) => void;
 }
 
-export default function HouseRentalsTable({ houseRentals }: TableProps) {
+export default function HouseRentalsTable({ houseRentals,onDelete }: TableProps) {
   
 
   return (
@@ -20,7 +22,13 @@ export default function HouseRentalsTable({ houseRentals }: TableProps) {
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Room Name
+                House Name
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                Owner Name
               </TableCell>
               <TableCell
                 isHeader
@@ -39,6 +47,12 @@ export default function HouseRentalsTable({ houseRentals }: TableProps) {
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
                 Period
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                Is Active
               </TableCell>
               <TableCell
                 isHeader
@@ -85,6 +99,19 @@ export default function HouseRentalsTable({ houseRentals }: TableProps) {
                     {houseRental.isActive ? "Active" : "Inactive"}
                   </Badge>
                 </TableCell>
+
+                 <TableCell 
+                className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400"
+                >
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-red-500"
+                    onClick={() => onDelete(houseRental.uuid)}
+                  >
+                    Delete
+                  </Button>
+            </TableCell>
 
               </TableRow>
             ))}

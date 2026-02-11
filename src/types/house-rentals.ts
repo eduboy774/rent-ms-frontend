@@ -51,7 +51,7 @@ export interface HouseRentalInputObject {
   renterUuid?: string | null;
 
   duration?: string | null;         // DURATION choices
-  amount?: string | null;           // Decimal → string
+  amount?: number | null;           // Decimal → string
   autoRenew?: boolean | null;
   noticePeriodDays?: number | null;
 
