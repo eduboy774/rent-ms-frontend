@@ -47,7 +47,6 @@ export interface HouseRentalFilteringInputObject {
 export interface HouseRentalInputObject {
   uuid?: string | null;
   houseUuid?: string | null;
-  ownerUuid?: string | null;
   renterUuid?: string | null;
 
   duration?: string | null;         // DURATION choices

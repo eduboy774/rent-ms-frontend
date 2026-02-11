@@ -2,7 +2,16 @@ import { Modal } from "../../../components/ui/modal";
 import Button from "../../../components/ui/button/Button";
 import Input from "../../../components/form/input/InputField";
 import Label from "../../../components/form/Label";
+import Select from "../../../components/form/Select";
 
+
+type SelectOption = {
+  label: string;
+  value: string;
+};
+
+  
+  
 type RenterModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -10,8 +19,11 @@ type RenterModalProps = {
   fullName: string;
   setFullName: (val: string) => void;
 
-  phoneNumber: number | null;
-  setPhoneNumber: (val: number | null) => void;
+  phoneNumber: string ;
+  setPhoneNumber: (val: string) => void;
+
+  renterTitle: string;
+  setRenterTitle: (val: string) => void;
 
   nidaNumber: string;
   setNidaNumber: (val: string) => void;
@@ -23,6 +35,8 @@ export default function RenterModal({
   isOpen,
   onClose,
   fullName,
+  renterTitle,
+  setRenterTitle,
   setFullName,
   phoneNumber,
   setPhoneNumber,
@@ -30,6 +44,14 @@ export default function RenterModal({
   setNidaNumber,
   onSave,
 }: RenterModalProps) {
+
+  const profileTitleOptions: SelectOption[] = [
+    { label: "Mr", value: "Mr" },
+    { label: "Mrs", value: "Mrs" },
+    { label: "Miss", value: "Miss" },
+  ];
+
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] m-4">
       <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
@@ -52,16 +74,26 @@ export default function RenterModal({
                   onChange={(e) => setFullName(e.target.value)}
                 />
               </div>
+               {/* Profile Title */}
+            <div className="col-span-2 lg:col-span-1">
+              <Label>Profile Title</Label>
+              <Select
+                options={profileTitleOptions}
+                placeholder="Select Title"
+                onChange={setRenterTitle}
+              />
+            </div>
 
               {/* Room Number */}
               <div>
                 <Label>Phone Number</Label>
                 <Input
-                  type="number"
+                  type="text"
                   value={phoneNumber ?? ""}
-                  onChange={(e) => setPhoneNumber(e.target.value ? Number(e.target.value) : null)}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                 />
               </div>
+             
 
               {/* Capacity */}
               <div>

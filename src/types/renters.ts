@@ -7,6 +7,7 @@ export interface Renters {
   fullName: string;
   phoneNumber: string;
   nidaNumber: string;
+  profileTitle: string | null;
   isActive: boolean;
   __typename: string;
 }
@@ -25,8 +26,9 @@ export interface RenterInputObject {
   uuid?: string | null;
   houseUuid?: string | null;
   fullName?: string | null;
-  phoneNumber?: number | null;
+  phoneNumber?: string | null;
   nidaNumber?: string | null;
+  renterTitle?: string | null;
 }
 
 

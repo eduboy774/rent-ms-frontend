@@ -18,7 +18,6 @@ export default function RoomHouseRentals() {
   
   const {isOpen, openModal, closeModal } = useModal();  
   const [houseRentals, setHouseRentals] = useState<HouseRental[]>([]);
-  const [ownerUuid, setOwnerUuid] = useState<string | null>(null);
   const [houseUuid,setHouseUid] = useState<string | null>(null);
   const [renterUuid, setRenterUuid] = useState<string | null>(null);
   const [autoRenew, setAutoRenew] = useState<boolean | false>(false);
@@ -148,7 +147,6 @@ const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE
           status: status,
           duration:duration,
           autoRenew:autoRenew,
-          ownerUuid: ownerUuid,
           houseUuid:houseUuid,
           renterUuid:renterUuid,
 
@@ -256,13 +254,11 @@ const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE
           setStatus={setStatus}
           owners ={options}
           renters={renterOptions}
-          ownerUuid={ownerUuid}
           renterUuid={renterUuid}
           houseUuid={houseUuid}
           houses={houseOptions}
           setHouseUuid={setHouseUid}
           setRenterUuid={setRenterUuid}
-          setOwnerUuid={setOwnerUuid}
           onSave={handleSave}
           />
     </div>

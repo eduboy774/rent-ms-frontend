@@ -18,8 +18,9 @@ export default function Renter() {
   const { isOpen, openModal, closeModal } = useModal();
 
   const [renterName, setRenterName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState<number | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [nidaNumber, setNidaNumber] = useState("");;
+  const [profileTitle, setProfileTitle] = useState("");
 
   const [renters, setRenters] = useState<Renters[]>([]);
   const { success, error, info } = useToast();
@@ -79,6 +80,7 @@ export default function Renter() {
       fullName: renterName,
       phoneNumber: phoneNumber,
       nidaNumber: nidaNumber,
+      renterTitle:profileTitle
     };
 
 
@@ -173,6 +175,8 @@ export default function Renter() {
         setPhoneNumber={setPhoneNumber}
         nidaNumber={nidaNumber}
         setNidaNumber={setNidaNumber}
+        renterTitle={profileTitle}
+        setRenterTitle={setProfileTitle}
         onSave={handleSave}
       />
     </div>

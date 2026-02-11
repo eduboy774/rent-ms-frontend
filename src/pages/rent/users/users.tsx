@@ -56,17 +56,17 @@ export default function UserPage() {
   });
 
   // Delete / Deactivate user
-  const handleDelete = (uuid: string) => {
+  const handleDelete = (profileUniqueId: string) => {
     const toastId = toast(
       <ConfirmToast
         onConfirm={async () => {
           toast.dismiss(toastId);
           try {
-            const { data } = await toggleUser({ variables: { uuid } });
-            const response = data?.deleteUserMutation?.response;
+            const { data } = await toggleUser({ variables: { profileUniqueId } });
+            const response = data?.deleteUsersMutation?.response;
 
-            if (response?.code === 9000) {
-              setUsers((prev) => prev.filter((u) => u.uuid !== uuid));
+            if (response?.code == 9000) {               
+              setUsers((prev) => prev.filter((u) => u.profileUniqueId !== profileUniqueId));
               toast.success("User deactivated successfully.");
             } else {
               toast.error(response?.message || "Failed to deactivate user.");
@@ -101,11 +101,13 @@ export default function UserPage() {
 
     try {
       const { data } = await createUser({ variables: { input } });
-      const response = data?.createUserMutation?.response;
-      const newUser = data?.createUserMutation?.data?.userProfile;
+      const response = data?.createUsersMutation?.response;
+      const newUser = data?.createUsersMutation?.data?.userProfile;
+      console.log('newUser',newUser);
       
-      if (response?.code === 9000 && newUser) {
-        success(response.message);
+      
+      if (response?.code == 9000 && newUser) {
+         
         setUsers((prev) => [newUser, ...prev]);
         closeModal();
         // this.a

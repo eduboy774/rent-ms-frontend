@@ -3,6 +3,8 @@ import Button from "../../../components/ui/button/Button";
 import Input from "../../../components/form/input/InputField";
 import Label from "../../../components/form/Label";
 import Select from "../../../components/form/Select";
+import { useState } from "react";
+import { EyeCloseIcon, EyeIcon } from "../../../icons";
 
 type SelectOption = {
   label: string;
@@ -78,6 +80,9 @@ export default function UserModal({
     { label: "Male", value: "MALE" },
     { label: "Female", value: "FEMALE" },
   ];
+  
+  const [showPassword, setShowPassword] = useState(false);
+  
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] m-4">
@@ -157,15 +162,28 @@ export default function UserModal({
               />
             </div>
 
-            {/* Password */}
-            <div className="col-span-2 lg:col-span-1">
-              <Label>Password</Label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+          <div className="col-span-2 lg:col-span-1">
+                  <Label>
+                    Password<span className="text-error-500">*</span>
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      placeholder="Enter your password"
+                      type={showPassword ? "text" : "password"}
+                      onChange={event=>setPassword(event.target.value)}
+                    />
+                    <span
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
+                    >
+                      {showPassword ? (
+                        <EyeIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                      ) : (
+                        <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                      )}
+                    </span>
+                  </div>
+                </div>
           </div>
 
           {/* Buttons */}

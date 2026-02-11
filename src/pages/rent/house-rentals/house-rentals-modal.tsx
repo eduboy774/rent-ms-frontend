@@ -18,9 +18,9 @@ type SelectOption = {
 ];
 
 const durationOptions: SelectOption[] = [
-  { label: "Three Months", value: "3_MONTHS" },
-  { label: "Six Months", value: "6_MONTHS" },
-  { label: "One Year", value: "12_MONTHS" },
+  { label: "Three Months", value: "3" },
+  { label: "Six Months", value: "6" },
+  { label: "One Year", value: "12" },
 ];
 
 
@@ -41,12 +41,10 @@ type HouseRentalModalProps = {
   renters: SelectOption[];
   houses:SelectOption [];
   renterUuid: string | null;
-  ownerUuid: string | null;
   houseUuid:string | null;
   setAutoRenew:(val:boolean) => void;
   setHouseUuid:(val:string) => void;
   setRenterUuid: (val: string) => void;  
-  setOwnerUuid: (val: string) => void;
   onSave: () => void;
 };
 
@@ -63,8 +61,6 @@ export default function HouseRentalModal({
   setDuration,
   setStatus,
   owners,
-  ownerUuid,
-  setOwnerUuid,
   renters,
   houses,
   renterUuid,
@@ -90,16 +86,6 @@ export default function HouseRentalModal({
         <form className="flex flex-col">
           <div className="custom-scrollbar overflow-y-auto px-2 pb-3">
             <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-              
-              <div className="col-span-2 lg:col-span-1">
-                <Label>Select Owner</Label>
-              <Select
-                options={owners}
-                placeholder="Select Owner"
-                onChange={setOwnerUuid}
-              />
-              </div>
-
               <div className="col-span-2 lg:col-span-1">
                 <Label>Select Renter</Label>
               <Select

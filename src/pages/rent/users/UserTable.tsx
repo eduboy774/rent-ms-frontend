@@ -59,7 +59,7 @@ export default function UserTable({ users, onDelete }: UserTableProps) {
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
             {users.map((user) => (
-              <TableRow key={user.uuid}>
+              <TableRow key={user.profileUniqueId}>
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <div className="flex items-center gap-3">
                     <div>
@@ -96,7 +96,7 @@ export default function UserTable({ users, onDelete }: UserTableProps) {
                     size="sm"
                     variant="outline"
                     className="text-red-500"
-                    onClick={() => onDelete(user.uuid)}
+                    onClick={() => onDelete(user.profileUniqueId)}
                   >
                     Delete
                   </Button>

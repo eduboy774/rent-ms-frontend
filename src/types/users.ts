@@ -2,8 +2,8 @@ import { ResponseObject } from "./base";
 
 export interface User {
   id: string;
-  uuid: string;
   userFirstName: string;
+  profileUniqueId:string;
   userLastName: string;
   userEmail: string;
   profileType: string;
@@ -63,7 +63,7 @@ export interface UserResponse {
 
 
 export interface CreateUserMutation {
-  createUserMutation: {
+  createUsersMutation: {
     response: ResponseObject;
     data: UserDetails;
     __typename: string;
