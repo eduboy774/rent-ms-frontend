@@ -47,6 +47,7 @@ const options = owners.map(user => ({
 
 const { loading:LoadingHouse,error:HouseError, data:HouseData } = useQuery(GET_HOUSES, {
     variables: {filtering:defaultFilter}, 
+    fetchPolicy:"network-only",
     onCompleted: (data) => {
     setHouses(data?.getHouses?.data || []);
   }
@@ -54,6 +55,7 @@ const { loading:LoadingHouse,error:HouseError, data:HouseData } = useQuery(GET_H
 
   useQuery(GET_USERS, {
     variables: { filtering: defaultUserFilter },
+    fetchPolicy:"network-only",
     onCompleted: (data) => {
       setOwners(data?.getUsers?.data || []);
     }

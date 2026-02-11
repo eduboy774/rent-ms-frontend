@@ -78,6 +78,7 @@ const houseOptions = houses.map(house => ({
 
 const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE_RENTALS, {
     variables: {filtering:defaultFilter}, 
+    fetchPolicy:"network-only",
     onCompleted: (data) => {
     setHouseRentals(data?.getHouseRentals?.data || []);
   }
@@ -86,6 +87,7 @@ const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE
 
   useQuery(GET_USERS, {
       variables: { filtering: defaultUserFilter },
+      fetchPolicy:"network-only",
       onCompleted: (data) => {
         setOwners(data?.getUsers?.data || []);
       }
@@ -94,6 +96,7 @@ const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE
 
       useQuery(GET_RENTERS, {
       variables: { filtering: defaultRenterFilter },
+      fetchPolicy:"network-only",
       onCompleted: (data) => {
         setRenters(data?.getRenters?.data || []);
       }
@@ -101,6 +104,7 @@ const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE
 
     useQuery(GET_HOUSES, {
     variables: { filtering: defaultHouseFilter },
+    fetchPolicy:"network-only",
     onCompleted: (data) => {
       setHouses(data?.getHouses?.data || []);
     }

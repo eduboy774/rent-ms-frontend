@@ -36,6 +36,7 @@ export default function Renter() {
 
   const { loading: LoadingRenter,error: RentersError } = useQuery(GET_RENTERS, {
     variables: { filtering: defaultFilter },
+    fetchPolicy:"network-only",
     onCompleted: (data) => {
       setRenters(data?.getRenters?.data || []);
     },

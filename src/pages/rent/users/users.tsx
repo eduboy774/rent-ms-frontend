@@ -50,6 +50,7 @@ export default function UserPage() {
   // Fetch users
   const { loading, error: queryError } = useQuery(GET_USERS, {
     variables: { filtering: defaultUserFilter },
+    fetchPolicy:"network-only",
     onCompleted: (data) => {
       setUsers(data?.getUsers?.data || []);
     },
