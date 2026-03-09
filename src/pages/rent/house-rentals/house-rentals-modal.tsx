@@ -46,6 +46,7 @@ type HouseRentalModalProps = {
   setHouseUuid:(val:string) => void;
   setRenterUuid: (val: string) => void;  
   onSave: () => void;
+  isEditing?: boolean;
 };
 
 
@@ -70,6 +71,7 @@ export default function HouseRentalModal({
   setHouseUuid,
   houseUuid,
   onSave,
+  isEditing = false,
 }: HouseRentalModalProps) {
 
 
@@ -80,7 +82,7 @@ export default function HouseRentalModal({
       <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
         <div className="px-2 pr-14">
           <h4 className="mb-2 text-xl font-semibold text-gray-800 dark:text-white/90">
-            Add House Rental Information
+            {isEditing ? "Edit House Rental" : "Add House Rental Information"}
           </h4>
         </div>
         <form className="flex flex-col">
@@ -91,6 +93,7 @@ export default function HouseRentalModal({
               <Select
                 options={renters}
                 placeholder="Select Renter"
+                defaultValue={renterUuid ?? ""}
                 onChange={setRenterUuid}
               />
               </div>
@@ -99,6 +102,7 @@ export default function HouseRentalModal({
               <Select
                 options={houses}
                 placeholder="Select House"
+                defaultValue={houseUuid ?? ""}
                 onChange={setHouseUuid}
               />
               </div>
@@ -116,6 +120,7 @@ export default function HouseRentalModal({
               <Select
                 options={statusOptions}
                 placeholder="Select Status"
+                defaultValue={status}
                 onChange={setStatus}
               />
             </div>
@@ -125,6 +130,7 @@ export default function HouseRentalModal({
               <Select
                 options={durationOptions}
                 placeholder="Select Duration"
+                defaultValue={duration}
                 onChange={setDuration}
               />
             </div>

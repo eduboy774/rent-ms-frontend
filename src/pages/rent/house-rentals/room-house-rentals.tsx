@@ -11,7 +11,7 @@ import HouseRentalModal from "./house-rentals-modal";
 import { RenterFilteringInputObject } from "../../../types/renters";
 import ConfirmToast from "../../../components/notifications/confirmation";
 import { toast } from "react-toastify";
-import { ACTIVATE_OR_DEACTIVATE_HOUSE_RENTAL, CREATE_HOUSE_RENTAL } from "../../../graphql/mutation";
+import { ACTIVATE_OR_DEACTIVATE_HOUSE_RENTAL, CREATE_HOUSE_RENTAL, UPDATE_HOUSE_RENTAL } from "../../../graphql/mutation";
 import PageCard from "../../../components/common/PageCard";
 
 export default function RoomHouseRentals() {
@@ -30,9 +30,12 @@ export default function RoomHouseRentals() {
 
   const [duration, setDuration] = useState("");
   const [status, setStatus] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingUuid, setEditingUuid] = useState<string | null>(null);
   const { success,error,info } = useToast();
 
   const [createHouseRental] = useMutation<CreateHouseRentalMutation, CreateHouseRentalVars>(CREATE_HOUSE_RENTAL);
+  const [updateHouseRental] = useMutation(UPDATE_HOUSE_RENTAL);
   const [deleteHouseRental] = useMutation(ACTIVATE_OR_DEACTIVATE_HOUSE_RENTAL);
   
 
@@ -146,36 +149,48 @@ const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE
          }
     
           const input: HouseRentalInputObject = {
-          uuid: null,
+          uuid: isEditing ? editingUuid : null,
           amount:amount,
           status: status,
           duration:duration,
           autoRenew:autoRenew,
           houseUuid:houseUuid,
           renterUuid:renterUuid,
-
         };
     
      if(amount && status){
          try {
-    
-        const { data } = await createHouseRental({ variables: { input } });
-        const responceHouseData:any = data?.createHouseRentalMutation;
-        const newHouse = data?.createHouseRentalMutation.data;
-        console.log("Create House Rental Response:", newHouse);
-    
-        if (responceHouseData?.response?.code === 9000 && newHouse ) {
-             success(responceHouseData.response.message);
-             setHouseRentals((prev) => [newHouse, ...prev]);
+
+        if (isEditing) {
+          const { data } = await updateHouseRental({ variables: { input } });
+          const responseData: any = data?.updateHouseRentalMutation;
+          const updatedRental = responseData?.data;
+
+          if (responseData?.response?.code === 9000 && updatedRental) {
+            success(responseData.response.message);
+            setHouseRentals((prev) =>
+              prev.map((r) => (r.uuid === editingUuid ? updatedRental : r))
+            );
             closeModal();
+          } else {
+            error(responseData?.response?.message);
+          }
         } else {
-          error(responceHouseData.response.message)
+          const { data } = await createHouseRental({ variables: { input } });
+          const responceHouseData: any = data?.createHouseRentalMutation;
+          const newHouse = data?.createHouseRentalMutation.data;
+
+          if (responceHouseData?.response?.code === 9000 && newHouse) {
+            success(responceHouseData.response.message);
+            setHouseRentals((prev) => [newHouse, ...prev]);
+            closeModal();
+          } else {
+            error(responceHouseData.response.message);
+          }
         }
       } catch (err) {
             console.error("Mutation error:",err);
       }
-    
-        closeModal();
       };
      }
        
@@ -186,10 +201,40 @@ const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE
   if (HouseRentalError) return null;
 
 
+  const resetForm = () => {
+    setHouseUid(null);
+    setRenterUuid(null);
+    setAmount(null);
+    setNoticePeriodDays(null);
+    setAutoRenew(false);
+    setDuration("");
+    setStatus("");
+    setIsEditing(false);
+    setEditingUuid(null);
+  };
+
+  const handleAdd = () => {
+    resetForm();
+    openModal();
+  };
+
+  const handleEdit = (rental: HouseRental) => {
+    setHouseUid(rental.house?.uuid || null);
+    setRenterUuid(rental.renter?.uuid || null);
+    setAmount(rental.amount ? Number(rental.amount) : null);
+    setNoticePeriodDays(rental.noticePeriodDays ?? null);
+    setAutoRenew(rental.autoRenew ?? false);
+    setDuration(rental.duration || "");
+    setStatus(rental.status || "");
+    setEditingUuid(rental.uuid);
+    setIsEditing(true);
+    openModal();
+  };
+
   return (
 
-    <PageCard title="House Rentals" count={houseRentals.length} countLabel="rental" onAdd={openModal} addLabel="Add House Rental">
-    <RoomHouseRentalsTable houseRentals={houseRentals} onDelete={handleDelete} onEdit={() => openModal()} />
+    <PageCard title="House Rentals" count={houseRentals.length} countLabel="rental" onAdd={handleAdd} addLabel="Add House Rental">
+    <RoomHouseRentalsTable houseRentals={houseRentals} onDelete={handleDelete} onEdit={handleEdit} />
     <HouseRentalModal
           isOpen={isOpen}
           onClose={closeModal}
@@ -211,6 +256,7 @@ const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE
           setHouseUuid={setHouseUid}
           setRenterUuid={setRenterUuid}
           onSave={handleSave}
+          isEditing={isEditing}
           />
     </PageCard>
   );

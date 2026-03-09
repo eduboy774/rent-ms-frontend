@@ -40,6 +40,7 @@ type UserModalProps = {
   setPassword: (val: string) => void;
 
   onSave: () => void;
+  isEditing?: boolean;
 };
 
 export default function UserModal({
@@ -62,6 +63,7 @@ export default function UserModal({
   password,
   setPassword,
   onSave,
+  isEditing = false,
 }: UserModalProps) {
   
   // Options for selects
@@ -88,7 +90,7 @@ export default function UserModal({
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] m-4">
       <div className="relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
         <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white/90">
-          Add User
+          {isEditing ? "Edit User" : "Add User"}
         </h4>
         <form className="flex flex-col gap-4">
           <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
@@ -138,6 +140,7 @@ export default function UserModal({
               <Select
                 options={profileTypeOptions}
                 placeholder="Select Profile Type"
+                defaultValue={profileType}
                 onChange={setProfileType}
               />
             </div>
@@ -148,6 +151,7 @@ export default function UserModal({
               <Select
                 options={profileTitleOptions}
                 placeholder="Select Title"
+                defaultValue={profileTitle}
                 onChange={setProfileTitle}
               />
             </div>
@@ -158,10 +162,12 @@ export default function UserModal({
               <Select
                 options={profileGenderOptions}
                 placeholder="Select Gender"
+                defaultValue={profileGender}
                 onChange={setProfileGender}
               />
             </div>
 
+          {!isEditing && (
           <div className="col-span-2 lg:col-span-1">
                   <Label>
                     Password<span className="text-error-500">*</span>
@@ -184,6 +190,7 @@ export default function UserModal({
                     </span>
                   </div>
                 </div>
+          )}
           </div>
 
           {/* Buttons */}

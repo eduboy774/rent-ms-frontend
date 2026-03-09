@@ -3,7 +3,7 @@ import { useState } from "react";
 import { GET_HOUSES, GET_USERS } from "../../../graphql/queries";
 import { useMutation, useQuery } from '@apollo/client';
 import type { CreateHouseVars, CreateHouseMutation, House, HouseFilteringInputObject, HouseInputObject, UserFilteringInputObject } from "../../../types/house";
-import { ACTIVATE_OR_DEACTIVATE_HOUSE, CREATE_HOUSE } from "../../../graphql/mutation";
+import { ACTIVATE_OR_DEACTIVATE_HOUSE, CREATE_HOUSE, UPDATE_HOUSE } from "../../../graphql/mutation";
 import { useToast } from "../../../components/notifications/useToast";
 import ConfirmToast from "../../../components/notifications/confirmation";
 import { toast } from "react-toastify";
@@ -17,11 +17,14 @@ export default function House() {
   const [message, setMessage] = useState("");
   const [houseName, setHouseName] = useState("");
   const [ownerUuid, setOwnerUuid] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingUuid, setEditingUuid] = useState<string | null>(null);
   
   const [houses, setHouses] = useState<House[]>([]);
   const [owners, setOwners] = useState<any[]>([]);
 
   const [createHouse] = useMutation<CreateHouseMutation, CreateHouseVars>(CREATE_HOUSE);
+  const [updateHouse] = useMutation(UPDATE_HOUSE);
   const [deleteHouse] = useMutation(ACTIVATE_OR_DEACTIVATE_HOUSE);
 
   const { success,error,info } = useToast();
@@ -95,7 +98,7 @@ useQuery(GET_HOUSES, {
      }
 
       const input: HouseInputObject = {
-      uuid: null,
+      uuid: isEditing ? editingUuid : null,
       name:houseName,
       description: message,
       ownerUuid: ownerUuid,
@@ -104,32 +107,67 @@ useQuery(GET_HOUSES, {
  if(houseName && message){
      try {
 
-    const { data } = await createHouse({ variables: { input } });
-    const responceHouseData:any = data?.createHouseMutation;
-    const newHouse = data?.createHouseMutation.data;
-    console.log("Create House Response:", newHouse);
+    if (isEditing) {
+      const { data } = await updateHouse({ variables: { input } });
+      const responseData: any = data?.updateHouseMutation;
+      const updatedHouse = responseData?.data;
 
-    if (responceHouseData?.response?.code === 9000 && newHouse ) {
-         success(responceHouseData.response.message);
-         setHouses((prev) => [newHouse, ...prev]);
+      if (responseData?.response?.code === 9000 && updatedHouse) {
+        success(responseData.response.message);
+        setHouses((prev) =>
+          prev.map((h) => (h.uuid === editingUuid ? updatedHouse : h))
+        );
         closeModal();
+      } else {
+        error(responseData?.response?.message);
+      }
     } else {
-      error(responceHouseData.response.message)
+      const { data } = await createHouse({ variables: { input } });
+      const responceHouseData: any = data?.createHouseMutation;
+      const newHouse = data?.createHouseMutation.data;
+
+      if (responceHouseData?.response?.code === 9000 && newHouse) {
+        success(responceHouseData.response.message);
+        setHouses((prev) => [newHouse, ...prev]);
+        closeModal();
+      } else {
+        error(responceHouseData.response.message);
+      }
     }
   } catch (err) {
         console.error("Mutation error:",err);
   }
-
-    closeModal();
   };
  }
    
 
   
 
+  const resetForm = () => {
+    setHouseName("");
+    setMessage("");
+    setOwnerUuid(null);
+    setIsEditing(false);
+    setEditingUuid(null);
+  };
+
+  const handleAdd = () => {
+    resetForm();
+    openModal();
+  };
+
+  const handleEdit = (house: House) => {
+    setHouseName(house.name || "");
+    setMessage(house.description || "");
+    setOwnerUuid(house.ownerUuid || house.ownerInfo?.profileUniqueId || null);
+    setEditingUuid(house.uuid);
+    setIsEditing(true);
+    openModal();
+  };
+
   return (
-    <PageCard title="Houses" count={houses.length} countLabel="house" onAdd={openModal} addLabel="Add House">
-    <HouseTable houses={houses} onDelete={handleDelete} onEdit={() => openModal()} />
+    <PageCard title="Houses" count={houses.length} countLabel="house" onAdd={handleAdd} addLabel="Add House">
+    <HouseTable houses={houses} onDelete={handleDelete} onEdit={handleEdit} />
 
      <HouseModal
       isOpen={isOpen}
@@ -142,6 +180,7 @@ useQuery(GET_HOUSES, {
       ownerUuid={ownerUuid}
       setOwnerUuid ={setOwnerUuid}  
       onSave={handleSave}
+      isEditing={isEditing}
       />
       
     </PageCard>

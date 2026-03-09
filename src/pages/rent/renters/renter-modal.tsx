@@ -29,6 +29,7 @@ type RenterModalProps = {
   setNidaNumber: (val: string) => void;
 
   onSave: () => void;
+  isEditing?: boolean;
 };
 
 export default function RenterModal({
@@ -43,6 +44,7 @@ export default function RenterModal({
   nidaNumber,
   setNidaNumber,
   onSave,
+  isEditing = false,
 }: RenterModalProps) {
 
   const profileTitleOptions: SelectOption[] = [
@@ -57,7 +59,7 @@ export default function RenterModal({
       <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
         <div className="px-2 pr-14">
           <h4 className="mb-2 text-xl font-semibold text-gray-800 dark:text-white/90">
-            Add Renter
+            {isEditing ? "Edit Renter" : "Add Renter"}
           </h4>
         </div>
 
@@ -80,6 +82,7 @@ export default function RenterModal({
               <Select
                 options={profileTitleOptions}
                 placeholder="Select Title"
+                defaultValue={renterTitle}
                 onChange={setRenterTitle}
               />
             </div>

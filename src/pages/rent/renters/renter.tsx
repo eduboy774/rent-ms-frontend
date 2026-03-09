@@ -3,7 +3,7 @@ import { useState } from "react";
 import { GET_RENTERS } from "../../../graphql/queries";
 import { useMutation, useQuery } from "@apollo/client";
 
-import { ACTIVATE_OR_DEACTIVATE_RENTER, CREATE_RENTER } from "../../../graphql/mutation";
+import { ACTIVATE_OR_DEACTIVATE_RENTER, CREATE_RENTER, UPDATE_RENTER } from "../../../graphql/mutation";
 import { useToast } from "../../../components/notifications/useToast";
 import ConfirmToast from "../../../components/notifications/confirmation";
 import { toast } from "react-toastify";
@@ -22,9 +22,12 @@ export default function Renter() {
   const [profileTitle, setProfileTitle] = useState("");
 
   const [renters, setRenters] = useState<Renters[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingUuid, setEditingUuid] = useState<string | null>(null);
   const { success, error, info } = useToast();
 
   const [createRenter] = useMutation(CREATE_RENTER);
+  const [updateRenter] = useMutation(UPDATE_RENTER);
   const [deleteRenter] = useMutation(ACTIVATE_OR_DEACTIVATE_RENTER);
 
   const defaultFilter: RenterFilteringInputObject = {
@@ -76,30 +79,44 @@ export default function Renter() {
     }
 
     const input: RenterInputObject = {
-      uuid: null,
+      uuid: isEditing ? editingUuid : null,
       fullName: renterName,
       phoneNumber: phoneNumber,
       nidaNumber: nidaNumber,
-      renterTitle:profileTitle
+      renterTitle: profileTitle,
     };
 
-
-
     try {
-      const { data } = await createRenter({ variables: { input } });
-      const response: any = data?.createRenterMutation;
-      const newRenter = response?.data;
+      if (isEditing) {
+        const { data } = await updateRenter({ variables: { input } });
+        const response: any = data?.updateRenterMutation;
+        const updatedRenter = response?.data;
 
-      if (response?.response?.code === 9000 && newRenter) {
-        success(response.response.message);
-        setRenters((prev) => [newRenter, ...prev]);
-        closeModal();
+        if (response?.response?.code === 9000 && updatedRenter) {
+          success(response.response.message);
+          setRenters((prev) =>
+            prev.map((r) => (r.uuid === editingUuid ? updatedRenter : r))
+          );
+          closeModal();
+        } else {
+          error(response?.response?.message);
+        }
       } else {
-        error(response?.response?.message);
+        const { data } = await createRenter({ variables: { input } });
+        const response: any = data?.createRenterMutation;
+        const newRenter = response?.data;
+
+        if (response?.response?.code === 9000 && newRenter) {
+          success(response.response.message);
+          setRenters((prev) => [newRenter, ...prev]);
+          closeModal();
+        } else {
+          error(response?.response?.message);
+        }
       }
     } catch (err) {
       console.error("Mutation error:", err);
-      error("Failed to create renter");
+      error(isEditing ? "Failed to update renter" : "Failed to create renter");
     }
   };
 
@@ -107,9 +124,33 @@ export default function Renter() {
   if (LoadingRenter) return null;
   if (RentersError) return null;
 
+  const resetForm = () => {
+    setRenterName("");
+    setPhoneNumber("");
+    setNidaNumber("");
+    setProfileTitle("");
+    setIsEditing(false);
+    setEditingUuid(null);
+  };
+
+  const handleAdd = () => {
+    resetForm();
+    openModal();
+  };
+
+  const handleEdit = (renter: Renters) => {
+    setRenterName(renter.fullName || "");
+    setPhoneNumber(renter.phoneNumber || "");
+    setNidaNumber(renter.nidaNumber || "");
+    setProfileTitle(renter.profileTitle || "");
+    setEditingUuid(renter.uuid);
+    setIsEditing(true);
+    openModal();
+  };
+
   return (
-    <PageCard title="Renters" count={renters.length} countLabel="renter" onAdd={openModal} addLabel="Add Renter">
-      <RenterTable renters={renters} onDelete={handleDelete} onEdit={() => openModal()} />
+    <PageCard title="Renters" count={renters.length} countLabel="renter" onAdd={handleAdd} addLabel="Add Renter">
+      <RenterTable renters={renters} onDelete={handleDelete} onEdit={handleEdit} />
 
       <RenterModal
         isOpen={isOpen}
@@ -123,6 +164,7 @@ export default function Renter() {
         renterTitle={profileTitle}
         setRenterTitle={setProfileTitle}
         onSave={handleSave}
+        isEditing={isEditing}
       />
     </PageCard>
   );

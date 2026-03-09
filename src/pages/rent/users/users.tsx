@@ -31,6 +31,7 @@ export default function UserPage() {
   const [profileTitle, setProfileTitle] = useState("Mr");
   const [profileGender, setProfileGender] = useState("MALE");
   const [password, setPassword] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   const [users, setUsers] = useState<User[]>([]);
 
@@ -121,9 +122,39 @@ export default function UserPage() {
     }
   };
 
+  const resetForm = () => {
+    setFirstName("");
+    setLastName("");
+    setEmail("");
+    setPhone("");
+    setProfileType("NORMAL_PROFILE");
+    setProfileTitle("Mr");
+    setProfileGender("MALE");
+    setPassword("");
+    setIsEditing(false);
+  };
+
+  const handleAdd = () => {
+    resetForm();
+    openModal();
+  };
+
+  const handleEdit = (user: User) => {
+    setFirstName(user.userFirstName || "");
+    setLastName(user.userLastName || "");
+    setEmail(user.userEmail || "");
+    setPhone(user.profilePhone || "");
+    setProfileType(user.profileType || "NORMAL_PROFILE");
+    setProfileTitle(user.profileTitle || "Mr");
+    setProfileGender(user.profileGender || "MALE");
+    setPassword("");
+    setIsEditing(true);
+    openModal();
+  };
+
   return (
-    <PageCard title="Users" count={users.length} countLabel="user" onAdd={openModal} addLabel="Add User">
-      <UserTable users={users} onDelete={handleDelete} onEdit={() => openModal()} />
+    <PageCard title="Users" count={users.length} countLabel="user" onAdd={handleAdd} addLabel="Add User">
+      <UserTable users={users} onDelete={handleDelete} onEdit={handleEdit} />
       
       <UserModal
       isOpen={isOpen}
@@ -145,6 +176,7 @@ export default function UserPage() {
       password={password}
       setPassword={setPassword}
       onSave={handleSave}
+      isEditing={isEditing}
     />
 
     </PageCard>

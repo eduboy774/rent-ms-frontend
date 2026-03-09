@@ -21,6 +21,7 @@ type HouseModalProps = {
   ownerUuid: string | null;      
   setOwnerUuid: (val: string) => void;
   onSave: () => void;
+  isEditing?: boolean;
 };
 
 export default function HouseModal({
@@ -31,8 +32,10 @@ export default function HouseModal({
   message,
   setMessage,
   owners,
+  ownerUuid,
   setOwnerUuid,
   onSave,
+  isEditing = false,
 }: HouseModalProps) {
 
 
@@ -45,7 +48,7 @@ export default function HouseModal({
       <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
         <div className="px-2 pr-14">
           <h4 className="mb-2 text-xl font-semibold text-gray-800 dark:text-white/90">
-            Add House
+            {isEditing ? "Edit House" : "Add House"}
           </h4>
         </div>
         <form className="flex flex-col">
@@ -64,6 +67,7 @@ export default function HouseModal({
               <Select
                 options={owners}
                 placeholder="Select Owner"
+                defaultValue={ownerUuid ?? ""}
                 onChange={setOwnerUuid}
               />
               </div>
