@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { subscribe as subscribeLoader } from "../utils/loaderManager";
 interface LoaderContextType {
   loading: boolean;
   setLoading: (value: boolean) => void;
@@ -8,6 +9,11 @@ const LoaderContext = createContext<LoaderContextType | undefined>(undefined);
 
 export const LoaderProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const unsubscribe = subscribeLoader(setLoading);
+    return unsubscribe;
+  }, []);
 
   return (
     <LoaderContext.Provider value={{ loading, setLoading }}>

@@ -3,8 +3,6 @@ import { useState } from "react";
 import { GET_RENTERS } from "../../../graphql/queries";
 import { useMutation, useQuery } from "@apollo/client";
 
-
-import { Audio, BallTriangle } from "react-loader-spinner";
 import { ACTIVATE_OR_DEACTIVATE_RENTER, CREATE_RENTER } from "../../../graphql/mutation";
 import { useToast } from "../../../components/notifications/useToast";
 import ConfirmToast from "../../../components/notifications/confirmation";
@@ -13,6 +11,7 @@ import { toast } from "react-toastify";
 import { RenterFilteringInputObject, RenterInputObject, Renters } from "../../../types/renters";
 import RenterModal from "./renter-modal";
 import RenterTable from "./renter-table";
+import PageCard from "../../../components/common/PageCard";
 
 export default function Renter() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -34,7 +33,7 @@ export default function Renter() {
 
  
 
-  const { loading: LoadingRenter,error: RentersError } = useQuery(GET_RENTERS, {
+  const { loading: LoadingRenter, error: RentersError } = useQuery(GET_RENTERS, {
     variables: { filtering: defaultFilter },
     fetchPolicy:"network-only",
     onCompleted: (data) => {
@@ -105,67 +104,12 @@ export default function Renter() {
   };
 
 
-  if (LoadingRenter)
-    return (
-      <Audio
-        height="80"
-        width="80"
-        color="green"
-        ariaLabel="three-dots-loading"
-      />
-    );
-
-  if (RentersError)
-    return (
-      <BallTriangle
-        height={100}
-        width={100}
-        radius={5}
-        color="#4fa94d"
-        ariaLabel="ball-triangle-loading"
-        visible
-      />
-    );
+  if (LoadingRenter) return null;
+  if (RentersError) return null;
 
   return (
-    <div className="p-2 border border-gray-200 rounded-xl dark:border-gray-800 lg:p-6">
-      <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-            Renter Information
-          </h2>
-        </div>
-
-        <button
-          onClick={openModal}
-          className="
-            flex w-full items-center justify-center gap-2
-            rounded-full border border-gray-300
-            bg-orange-500 px-4 py-3 text-sm font-medium
-            text-white shadow-theme-xs
-            hover:bg-orange-500 hover:text-white
-            dark:border-gray-700 dark:bg-orange-500
-            dark:text-white dark:hover:bg-orange-500
-            lg:inline-flex lg:w-auto
-          "
-        >
-          <svg
-            className="fill-current"
-            width="18"
-            height="18"
-            viewBox="0 0 18 18"
-          >
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M9 2C9.27614 2 9.5 2.22386 9.5 2.5V8.5H15.5C15.7761 8.5 16 8.72386 16 9C16 9.27614 15.7761 9.5 15.5 9.5H9.5V15.5C9.5 15.7761 9.27614 16 9 16C8.72386 16 8.5 15.7761 8.5 15.5V9.5H2.5C2.22386 9.5 2 9.27614 2 9C2 8.72386 2.22386 8.5 2.5 8.5H8.5V2.5C8.5 2.22386 8.72386 2 9 2Z"
-            />
-          </svg>
-          Add Renter
-        </button>
-      </div>
-
-      <RenterTable renters={renters} onDelete={handleDelete} />
+    <PageCard title="Renters" count={renters.length} countLabel="renter" onAdd={openModal} addLabel="Add Renter">
+      <RenterTable renters={renters} onDelete={handleDelete} onEdit={() => openModal()} />
 
       <RenterModal
         isOpen={isOpen}
@@ -180,6 +124,6 @@ export default function Renter() {
         setRenterTitle={setProfileTitle}
         onSave={handleSave}
       />
-    </div>
+    </PageCard>
   );
 }

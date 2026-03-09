@@ -1,23 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 
-// Assume these icons are imported from an icon library
 import {
-  // BoxCubeIcon,
-  // CalenderIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
   ListIcon,
   UserCircleIcon,
-  // PageIcon,
-  // PieChartIcon,
-  // PlugInIcon,
-  // TableIcon,
-  // UserCircleIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
-import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
   name: string;
@@ -30,6 +21,7 @@ const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Dashboard",
+    path: "/home",
   },
   {
     icon: <UserCircleIcon />,
@@ -40,46 +32,14 @@ const navItems: NavItem[] = [
     name: "Settings",
     icon: <ListIcon />,
     subItems: [
-      { name: "Users", path: "/users", pro: false },
-      { name: "Houses", path: "/houses", pro: false },
-      { name: "Renters", path: "/renters", pro: false },
-      { name: "House Rentals", path: "/house-rentals", pro: false },
-      { name: "Notification", path: "/notifications", pro: false },
-      { name: "Payment", path: "/payments", pro: false }
+      { name: "Users", path: "/users" },
+      { name: "Houses", path: "/houses" },
+      { name: "Renters", path: "/renters" },
+      { name: "House Rentals", path: "/house-rentals" },
+      { name: "Notification", path: "/notifications" },
+      { name: "Payment", path: "/payments" },
     ],
-    
   },
-];
-
-const othersItems: NavItem[] = [
-  // {
-  //   icon: <PieChartIcon />,
-  //   name: "Charts",
-  //   subItems: [
-  //     { name: "Line Chart", path: "/line-chart", pro: false },
-  //     { name: "Bar Chart", path: "/bar-chart", pro: false },
-  //   ],
-  // },
-  // {
-  //   icon: <BoxCubeIcon />,
-  //   name: "UI Elements",
-  //   subItems: [
-  //     { name: "Alerts", path: "/alerts", pro: false },
-  //     { name: "Avatar", path: "/avatars", pro: false },
-  //     { name: "Badge", path: "/badge", pro: false },
-  //     { name: "Buttons", path: "/buttons", pro: false },
-  //     { name: "Images", path: "/images", pro: false },
-  //     { name: "Videos", path: "/videos", pro: false },
-  //   ],
-  // },
-  // {
-  //   icon: <PlugInIcon />,
-  //   name: "Authentication",
-  //   subItems: [
-  //     { name: "Sign In", path: "/signin", pro: false },
-  //     { name: "Sign Up", path: "/signup", pro: false },
-  //   ],
-  // },
 ];
 
 const AppSidebar: React.FC = () => {
@@ -87,7 +47,7 @@ const AppSidebar: React.FC = () => {
   const location = useLocation();
 
   const [openSubmenu, setOpenSubmenu] = useState<{
-    type: "main" | "others";
+    type: "main";
     index: number;
   } | null>(null);
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
@@ -95,7 +55,6 @@ const AppSidebar: React.FC = () => {
   );
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // const isActive = (path: string) => location.pathname === path;
   const isActive = useCallback(
     (path: string) => location.pathname === path,
     [location.pathname]
@@ -103,21 +62,15 @@ const AppSidebar: React.FC = () => {
 
   useEffect(() => {
     let submenuMatched = false;
-    ["main", "others"].forEach((menuType) => {
-      const items = menuType === "main" ? navItems : othersItems;
-      items.forEach((nav, index) => {
-        if (nav.subItems) {
-          nav.subItems.forEach((subItem) => {
-            if (isActive(subItem.path)) {
-              setOpenSubmenu({
-                type: menuType as "main" | "others",
-                index,
-              });
-              submenuMatched = true;
-            }
-          });
-        }
-      });
+    navItems.forEach((nav, index) => {
+      if (nav.subItems) {
+        nav.subItems.forEach((subItem) => {
+          if (isActive(subItem.path)) {
+            setOpenSubmenu({ type: "main", index });
+            submenuMatched = true;
+          }
+        });
+      }
     });
 
     if (!submenuMatched) {
@@ -137,150 +90,25 @@ const AppSidebar: React.FC = () => {
     }
   }, [openSubmenu]);
 
-  const handleSubmenuToggle = (index: number, menuType: "main" | "others") => {
-    setOpenSubmenu((prevOpenSubmenu) => {
-      if (
-        prevOpenSubmenu &&
-        prevOpenSubmenu.type === menuType &&
-        prevOpenSubmenu.index === index
-      ) {
+  const handleSubmenuToggle = (index: number) => {
+    setOpenSubmenu((prev) => {
+      if (prev && prev.type === "main" && prev.index === index) {
         return null;
       }
-      return { type: menuType, index };
+      return { type: "main", index };
     });
   };
 
-  const renderMenuItems = (items: NavItem[], menuType: "main" | "others") => (
-    <ul className="flex flex-col gap-4">
-      {items.map((nav, index) => (
-        <li key={nav.name}>
-          {nav.subItems ? (
-            <button
-              onClick={() => handleSubmenuToggle(index, menuType)}
-              className={`menu-item group ${
-                openSubmenu?.type === menuType && openSubmenu?.index === index
-                  ? "menu-item-active"
-                  : "menu-item-inactive"
-              } cursor-pointer ${
-                !isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "lg:justify-start"
-              }`}
-            >
-              <span
-                className={`menu-item-icon-size  ${
-                  openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? "menu-item-icon-active"
-                    : "menu-item-icon-inactive"
-                }`}
-              >
-                {nav.icon}
-              </span>
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <span className="menu-item-text">{nav.name}</span>
-              )}
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <ChevronDownIcon
-                  className={`ml-auto w-5 h-5 transition-transform duration-200 ${
-                    openSubmenu?.type === menuType &&
-                    openSubmenu?.index === index
-                      ? "rotate-180 text-brand-500"
-                      : ""
-                  }`}
-                />
-              )}
-            </button>
-          ) : (
-            nav.path && (
-              <Link
-                to={nav.path}
-                className={`menu-item group ${
-                  isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
-                }`}
-              >
-                <span
-                  className={`menu-item-icon-size ${
-                    isActive(nav.path)
-                      ? "menu-item-icon-active"
-                      : "menu-item-icon-inactive"
-                  }`}
-                >
-                  {nav.icon}
-                </span>
-                {(isExpanded || isHovered || isMobileOpen) && (
-                  <span className="menu-item-text">{nav.name}</span>
-                )}
-              </Link>
-            )
-          )}
-          {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
-            <div
-              ref={(el) => {
-                subMenuRefs.current[`${menuType}-${index}`] = el;
-              }}
-              className="overflow-hidden transition-all duration-300"
-              style={{
-                height:
-                  openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? `${subMenuHeight[`${menuType}-${index}`]}px`
-                    : "0px",
-              }}
-            >
-              <ul className="mt-2 space-y-1 ml-9">
-                {nav.subItems.map((subItem) => (
-                  <li key={subItem.name}>
-                    <Link
-                      to={subItem.path}
-                      className={`menu-dropdown-item ${
-                        isActive(subItem.path)
-                          ? "menu-dropdown-item-active"
-                          : "menu-dropdown-item-inactive"
-                      }`}
-                    >
-                      {subItem.name}
-                      <span className="flex items-center gap-1 ml-auto">
-                        {subItem.new && (
-                          <span
-                            className={`ml-auto ${
-                              isActive(subItem.path)
-                                ? "menu-dropdown-badge-active"
-                                : "menu-dropdown-badge-inactive"
-                            } menu-dropdown-badge`}
-                          >
-                            new
-                          </span>
-                        )}
-                        {subItem.pro && (
-                          <span
-                            className={`ml-auto ${
-                              isActive(subItem.path)
-                                ? "menu-dropdown-badge-active"
-                                : "menu-dropdown-badge-inactive"
-                            } menu-dropdown-badge`}
-                          >
-                            pro
-                          </span>
-                        )}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </li>
-      ))}
-    </ul>
-  );
+  const sidebarOpen = isExpanded || isHovered || isMobileOpen;
 
   return (
     <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
+      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 left-0 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900
         ${
           isExpanded || isMobileOpen
-            ? "w-[290px]"
+            ? "w-[280px]"
             : isHovered
-            ? "w-[290px]"
+            ? "w-[280px]"
             : "w-[90px]"
         }
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
@@ -288,67 +116,153 @@ const AppSidebar: React.FC = () => {
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div
-        className={`py-8 flex ${
-          !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
-        }`}
-      >
-        <Link to="/">
-          {isExpanded || isHovered || isMobileOpen ? (
-            <>
-             <div className="flex text-center text-xl text-orange-400">
-              <span className="mx-auto font-semibold">Rental Management System</span>
-            </div>
-            </>
-          ) : (
-            <img
-              src="/images/logo/logo-icon.svg"
-              alt="Logo"
-              width={32}
-              height={32}
-            />
+      {/* ─── Logo / Brand ─── */}
+      <div className="flex h-[72px] items-center border-b border-gray-200 px-5 dark:border-gray-800">
+        <Link to="/home" className="flex items-center gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-500 shadow-sm">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
+              />
+            </svg>
+          </div>
+          {sidebarOpen && (
+            <span className="text-base font-semibold text-gray-900 dark:text-white">
+              Rent<span className="text-orange-500">MS</span>
+            </span>
           )}
         </Link>
       </div>
-      <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
-        <nav className="mb-6">
-          <div className="flex flex-col gap-4">
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isExpanded && !isHovered
-                    ? "lg:justify-center"
-                    : "justify-start"
-                }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "Menu"
-                ) : (
-                  <HorizontaLDots className="size-6" />
-                )}
-              </h2>
-              {renderMenuItems(navItems, "main")}
-            </div>
-            <div className="">
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isExpanded && !isHovered
-                    ? "lg:justify-center"
-                    : "justify-start"
-                }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "Others"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(othersItems, "others")}
-            </div>
-          </div>
-        </nav>
-        {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
+
+      {/* ─── Navigation ─── */}
+      <div className="flex flex-1 flex-col overflow-y-auto px-4 py-5 no-scrollbar">
+        <div className="mb-3">
+          <h2
+            className={`mb-2 flex text-[11px] font-semibold uppercase tracking-wider text-gray-400 ${
+              !isExpanded && !isHovered ? "lg:justify-center" : "px-3"
+            }`}
+          >
+            {sidebarOpen ? "Menu" : <HorizontaLDots className="size-5" />}
+          </h2>
+        </div>
+
+        <ul className="flex flex-col gap-1">
+          {navItems.map((nav, index) => (
+            <li key={nav.name}>
+              {nav.subItems ? (
+                /* ── Collapsible parent ── */
+                <button
+                  onClick={() => handleSubmenuToggle(index)}
+                  className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    openSubmenu?.type === "main" && openSubmenu?.index === index
+                      ? "bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400"
+                      : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5"
+                  } ${!isExpanded && !isHovered ? "lg:justify-center" : ""}`}
+                >
+                  <span
+                    className={`shrink-0 [&>svg]:!size-5 ${
+                      openSubmenu?.type === "main" &&
+                      openSubmenu?.index === index
+                        ? "text-orange-500 dark:text-orange-400"
+                        : "text-gray-400 group-hover:text-gray-600 dark:text-gray-500 dark:group-hover:text-gray-300"
+                    }`}
+                  >
+                    {nav.icon}
+                  </span>
+                  {sidebarOpen && (
+                    <>
+                      <span className="flex-1 text-left">{nav.name}</span>
+                      <ChevronDownIcon
+                        className={`h-4 w-4 shrink-0 transition-transform duration-200 ${
+                          openSubmenu?.type === "main" &&
+                          openSubmenu?.index === index
+                            ? "rotate-180 text-orange-500"
+                            : "text-gray-400"
+                        }`}
+                      />
+                    </>
+                  )}
+                </button>
+              ) : (
+                /* ── Direct link ── */
+                nav.path && (
+                  <Link
+                    to={nav.path}
+                    className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                      isActive(nav.path)
+                        ? "bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400"
+                        : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5"
+                    } ${!isExpanded && !isHovered ? "lg:justify-center" : ""}`}
+                  >
+                    <span
+                      className={`shrink-0 [&>svg]:!size-5 ${
+                        isActive(nav.path)
+                          ? "text-orange-500 dark:text-orange-400"
+                          : "text-gray-400 group-hover:text-gray-600 dark:text-gray-500 dark:group-hover:text-gray-300"
+                      }`}
+                    >
+                      {nav.icon}
+                    </span>
+                    {sidebarOpen && <span>{nav.name}</span>}
+                  </Link>
+                )
+              )}
+
+              {/* ── Sub-menu ── */}
+              {nav.subItems && sidebarOpen && (
+                <div
+                  ref={(el) => {
+                    subMenuRefs.current[`main-${index}`] = el;
+                  }}
+                  className="overflow-hidden transition-all duration-300"
+                  style={{
+                    height:
+                      openSubmenu?.type === "main" &&
+                      openSubmenu?.index === index
+                        ? `${subMenuHeight[`main-${index}`]}px`
+                        : "0px",
+                  }}
+                >
+                  <ul className="mt-1 ml-5 space-y-0.5 border-l-2 border-gray-200 pl-4 dark:border-gray-700">
+                    {nav.subItems.map((subItem) => (
+                      <li key={subItem.name}>
+                        <Link
+                          to={subItem.path}
+                          className={`block rounded-md px-3 py-2 text-sm transition-colors ${
+                            isActive(subItem.path)
+                              ? "bg-orange-50 font-medium text-orange-600 dark:bg-orange-500/10 dark:text-orange-400"
+                              : "text-gray-500 hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+                          }`}
+                        >
+                          {subItem.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
       </div>
+
+      {/* ─── Footer ─── */}
+      {sidebarOpen && (
+        <div className="border-t border-gray-200 px-5 py-4 dark:border-gray-800">
+          <p className="text-center text-xs text-gray-400 dark:text-gray-500">
+            &copy; {new Date().getFullYear()} Rental MS
+          </p>
+        </div>
+      )}
     </aside>
   );
 };

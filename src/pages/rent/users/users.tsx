@@ -3,7 +3,6 @@ import { useModal } from "../../../hooks/useModal";
 import { useState } from "react";
 import { GET_USERS } from "../../../graphql/queries";
 import { useMutation, useQuery } from "@apollo/client";
-import { Audio, BallTriangle } from "react-loader-spinner";
 import { useToast } from "../../../components/notifications/useToast";
 import ConfirmToast from "../../../components/notifications/confirmation";
 import { toast } from "react-toastify";
@@ -18,6 +17,7 @@ import {
 } from "../../../types/users";
 import { ACTIVATE_OR_DEACTIVATE_USER, CREATE_USER } from "../../../graphql/mutation";
 import UserTable from "./UserTable";
+import PageCard from "../../../components/common/PageCard";
 
 export default function UserPage() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -34,7 +34,7 @@ export default function UserPage() {
 
   const [users, setUsers] = useState<User[]>([]);
 
-  const { success, error, info } = useToast();
+  const { error, info } = useToast();
 
   // GraphQL mutations
   const [createUser] = useMutation<CreateUserMutation, CreateUserVars>(CREATE_USER);
@@ -48,7 +48,7 @@ export default function UserPage() {
   };
 
   // Fetch users
-  const { loading, error: queryError } = useQuery(GET_USERS, {
+  useQuery(GET_USERS, {
     variables: { filtering: defaultUserFilter },
     fetchPolicy:"network-only",
     onCompleted: (data) => {
@@ -121,38 +121,9 @@ export default function UserPage() {
     }
   };
 
-  // Loading / Error UI
-  if (loading)
-    return <Audio height="80" width="80" color="green" ariaLabel="loading" />;
-
-  if (queryError)
-    return (
-      <BallTriangle
-        height={100}
-        width={100}
-        radius={5}
-        color="#4fa94d"
-        ariaLabel="error"
-        visible
-      />
-    );
-
   return (
-    <div className="p-2 border border-gray-200 rounded-xl dark:border-gray-800 lg:p-6">
-      <div className="flex flex-col gap-2 lg:flex-row lg:justify-between">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Users Information
-        </h2>
-
-        <button
-          onClick={openModal}
-          className="flex items-center gap-2 rounded-full bg-orange-500 px-4 py-3 text-sm font-medium text-white"
-        >
-          Add User
-        </button>
-      </div>
-      
-      <UserTable users={users} onDelete={handleDelete} />
+    <PageCard title="Users" count={users.length} countLabel="user" onAdd={openModal} addLabel="Add User">
+      <UserTable users={users} onDelete={handleDelete} onEdit={() => openModal()} />
       
       <UserModal
       isOpen={isOpen}
@@ -176,6 +147,6 @@ export default function UserPage() {
       onSave={handleSave}
     />
 
-    </div>
+    </PageCard>
   );
 }

@@ -1,5 +1,6 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, createHttpLink, ApolloLink, Observable } from '@apollo/client';
 import { NormalizedCacheObject } from '@apollo/client';
+import { startRequest, endRequest } from '../utils/loaderManager';
 
 const createApolloClient = (): ApolloClient<NormalizedCacheObject> => {
   const token: string | null = localStorage.getItem('accessToken');
@@ -16,8 +17,38 @@ const createApolloClient = (): ApolloClient<NormalizedCacheObject> => {
     },
   });
 
+  const loadingLink = new ApolloLink((operation, forward) => {
+    // signal loader start
+    startRequest();
+
+    return new Observable((observer: any) => {
+      const sub = forward(operation).subscribe({
+        next: (result: any) => {
+          observer.next(result);
+        },
+        error: (err: any) => {
+          observer.error(err);
+          endRequest();
+        },
+        complete: () => {
+          observer.complete();
+          endRequest();
+        },
+      });
+
+      return () => {
+        try {
+          sub.unsubscribe();
+        } catch (e) {
+          // ignore
+        }
+        endRequest();
+      };
+    });
+  });
+
   const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
-    link: httpLink,
+    link: ApolloLink.from([loadingLink, httpLink]),
     cache: new InMemoryCache(),
   });
    

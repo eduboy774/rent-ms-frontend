@@ -1,24 +1,27 @@
 type ConfirmToastProps = {
   onConfirm: () => void;
   onCancel: () => void;
+  message?: string;
 };
 
-export default function ConfirmToast({ onConfirm, onCancel }: ConfirmToastProps) {
+export default function ConfirmToast({ onConfirm, onCancel, message }: ConfirmToastProps) {
   return (
-    <div>
-      <p className="font-medium text-gray-800">Are you sure you want to delete?</p>
-      <div className="mt-2 flex gap-3">
+    <div className="flex flex-col gap-3">
+      <p className="text-sm font-medium text-gray-800">
+        {message || "Are you sure you want to delete?"}
+      </p>
+      <div className="flex gap-2">
         <button
           onClick={onConfirm}
-          className="rounded bg-red-600 px-3 py-1 text-white hover:bg-red-700"
+          className="rounded-md bg-orange-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-orange-600"
         >
-          Yes
+          Yes, confirm
         </button>
         <button
           onClick={onCancel}
-          className="rounded bg-gray-300 px-3 py-1 text-gray-800 hover:bg-gray-400"
+          className="rounded-md bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200"
         >
-          No
+          Cancel
         </button>
       </div>
     </div>
