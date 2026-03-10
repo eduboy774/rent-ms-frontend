@@ -229,3 +229,143 @@ query GetHouseRentals($filtering: HouseRentalFilteringInputObject) {
 }
 
 `;
+
+export const GET_DASHBOARD_SUMMARY = gql`
+query GetDashboardSummary {
+  getDashboardSummary {
+    data {
+      totalUsers
+      totalHouses
+      totalRenters
+      totalRentals
+      activeRentalsCount
+      pendingRentalsCount
+      expiredRentalsCount
+      users {
+        id
+        profileUniqueId
+        userFirstName
+        userLastName
+        userEmail
+        profilePhone
+        profileTitle
+        profilePhoto
+        profileIsActive
+        profileType
+        profileLevel
+        profileGender
+      }
+      houses {
+        id
+        uuid
+        name
+        ownerInfo {
+          id
+          profileUniqueId
+          userFirstName
+          userLastName
+          userEmail
+          profilePhone
+          profileTitle
+          profilePhoto
+          profileIsActive
+          profileType
+          profileLevel
+          profileGender
+        }
+        address
+        description
+        isActive
+      }
+      renters {
+        id
+        uuid
+        fullName
+        renterTitle
+        phoneNumber
+        nidaNumber
+        isActive
+      }
+      activeRentals {
+        id
+        uuid
+        house {
+          id
+          uuid
+          name
+          address
+          description
+          isActive
+        }
+        owner {
+          id
+          profileUniqueId
+          userFirstName
+          userLastName
+          userEmail
+          profilePhone
+          profileTitle
+          profilePhoto
+          profileIsActive
+          profileType
+          profileLevel
+          profileGender
+        }
+        renter {
+          id
+          uuid
+          fullName
+          renterTitle
+          phoneNumber
+          nidaNumber
+          isActive
+        }
+        duration
+        noticePeriodDays
+        amount
+        totalAmount
+        autoRenew
+        status
+        expiredAt
+        terminatedAt
+        createdAt
+        isActive
+      }
+      pendingRentals {
+        id
+        uuid
+        duration
+        noticePeriodDays
+        amount
+        totalAmount
+        autoRenew
+        status
+        expiredAt
+        terminatedAt
+        createdAt
+        isActive
+      }
+      expiredRentals {
+        id
+        uuid
+        duration
+        noticePeriodDays
+        amount
+        totalAmount
+        autoRenew
+        status
+        expiredAt
+        terminatedAt
+        createdAt
+        isActive
+      }
+    }
+    response {
+      id
+      status
+      code
+      message
+    }
+  }
+}
+`;

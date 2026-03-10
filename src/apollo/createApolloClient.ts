@@ -1,20 +1,24 @@
 import { ApolloClient, InMemoryCache, createHttpLink, ApolloLink, Observable } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
 import { NormalizedCacheObject } from '@apollo/client';
 import { startRequest, endRequest } from '../utils/loaderManager';
 
 const createApolloClient = (): ApolloClient<NormalizedCacheObject> => {
-  const token: string | null = localStorage.getItem('accessToken');
-  console.log('access_token in the provider',token);
-  const refreshToken: string | null = localStorage.getItem('refreshToken');
-  console.log(refreshToken);
-
   const API_URL = import.meta.env.VITE_API_URL;
 
   const httpLink = createHttpLink({
     uri: API_URL,
-    headers: {
-      authorization: token ? `Bearer ${token}` : '',
-    },
+  });
+
+  // Reads the token fresh on every request so post-login calls are always authenticated
+  const authLink = setContext((_, { headers }) => {
+    const token = localStorage.getItem('accessToken');
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : '',
+      },
+    };
   });
 
   const loadingLink = new ApolloLink((operation, forward) => {
@@ -48,7 +52,7 @@ const createApolloClient = (): ApolloClient<NormalizedCacheObject> => {
   });
 
   const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
-    link: ApolloLink.from([loadingLink, httpLink]),
+    link: ApolloLink.from([loadingLink, authLink, httpLink]),
     cache: new InMemoryCache(),
   });
    

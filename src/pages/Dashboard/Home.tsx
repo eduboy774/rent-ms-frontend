@@ -1,52 +1,26 @@
 import { useQuery } from "@apollo/client";
-import { useState } from "react";
-import { GET_HOUSES, GET_HOUSE_RENTALS, GET_RENTERS, GET_USERS } from "../../graphql/queries";
+import { GET_DASHBOARD_SUMMARY } from "../../graphql/queries";
 import { HouseRental } from "../../types/house-rentals";
-import { House } from "../../types/house";
-import { Renters } from "../../types/renters";
-import { User } from "../../types/users";
 import Badge from "../../components/ui/badge/Badge";
 import PageMeta from "../../components/common/PageMeta";
 
 export default function Home() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [houses, setHouses] = useState<House[]>([]);
-  const [renters, setRenters] = useState<Renters[]>([]);
-  const [rentals, setRentals] = useState<HouseRental[]>([]);
-
-  useQuery(GET_USERS, {
-    variables: { filtering: { profileType: null, profileIsActive: true, pageNumber: 1 } },
+  const { data, loading, error } = useQuery(GET_DASHBOARD_SUMMARY, {
     fetchPolicy: "network-only",
-    onCompleted: (data) => setUsers(data?.getUsers?.data || []),
   });
 
-  useQuery(GET_HOUSES, {
-    variables: { filtering: { uuid: null, name: null } },
-    fetchPolicy: "network-only",
-    onCompleted: (data) => setHouses(data?.getHouses?.data || []),
-  });
+  const summary = data?.getDashboardSummary?.data;
 
-  useQuery(GET_RENTERS, {
-    variables: { filtering: { uuid: null } },
-    fetchPolicy: "network-only",
-    onCompleted: (data) => setRenters(data?.getRenters?.data || []),
-  });
-
-  useQuery(GET_HOUSE_RENTALS, {
-    variables: { filtering: { uuid: null, houseUuid: null, renterUuid: null, status: null } },
-    fetchPolicy: "network-only",
-    onCompleted: (data) => setRentals(data?.getHouseRentals?.data || []),
-  });
-
-  const activeRentals = rentals.filter((r) => r.status === "ACTIVE");
-  const pendingRentals = rentals.filter((r) => r.status === "PENDING");
-  const expiredRentals = rentals.filter((r) => r.status === "EXPIRED");
-  const recentRentals = [...rentals].slice(0, 6);
+  const activeRentals = summary?.activeRentals ?? [];
+  const pendingRentals = summary?.pendingRentals ?? [];
+  const expiredRentals = summary?.expiredRentals ?? [];
+  const totalRentals = summary?.totalRentals ?? 0;
+  const recentRentals = activeRentals.slice(0, 6);
 
   const metrics = [
     {
       label: "Total Houses",
-      value: houses.length,
+      value: summary?.totalHouses ?? 0,
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
@@ -56,7 +30,7 @@ export default function Home() {
     },
     {
       label: "Total Renters",
-      value: renters.length,
+      value: summary?.totalRenters ?? 0,
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128H9m6 0a5.972 5.972 0 00-.786-3.07M9 19.128A9.38 9.38 0 016.375 19.5a9.337 9.337 0 01-4.121-.952 4.125 4.125 0 017.533-2.493M9 19.128v-.003c0-1.113.285-2.16.786-3.07m0 0A5.972 5.972 0 0112 15c1.151 0 2.234.321 3.152.886M12 12a3 3 0 100-6 3 3 0 000 6z" />
@@ -66,7 +40,7 @@ export default function Home() {
     },
     {
       label: "Active Rentals",
-      value: activeRentals.length,
+      value: summary?.activeRentalsCount ?? 0,
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
@@ -76,7 +50,7 @@ export default function Home() {
     },
     {
       label: "Total Users",
-      value: users.length,
+      value: summary?.totalUsers ?? 0,
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -99,6 +73,22 @@ export default function Home() {
       default: return "info";
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-sm text-red-500">Failed to load dashboard. Please try again.</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -158,7 +148,7 @@ export default function Home() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                      {recentRentals.map((rental) => (
+                      {recentRentals.map((rental: HouseRental) => (
                         <tr key={rental.uuid} className="transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.02]">
                           <td className="px-5 py-4">
                             <div className="flex items-center gap-3">
@@ -207,24 +197,24 @@ export default function Home() {
 
               <div className="mt-5 space-y-4">
                 {/* Progress bar */}
-                {rentals.length > 0 && (
+                {totalRentals > 0 && (
                   <div className="flex h-3 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
                     {activeRentals.length > 0 && (
                       <div
                         className="bg-green-500 transition-all"
-                        style={{ width: `${(activeRentals.length / rentals.length) * 100}%` }}
+                        style={{ width: `${(activeRentals.length / totalRentals) * 100}%` }}
                       />
                     )}
                     {pendingRentals.length > 0 && (
                       <div
                         className="bg-yellow-500 transition-all"
-                        style={{ width: `${(pendingRentals.length / rentals.length) * 100}%` }}
+                        style={{ width: `${(pendingRentals.length / totalRentals) * 100}%` }}
                       />
                     )}
                     {expiredRentals.length > 0 && (
                       <div
                         className="bg-red-500 transition-all"
-                        style={{ width: `${(expiredRentals.length / rentals.length) * 100}%` }}
+                        style={{ width: `${(expiredRentals.length / totalRentals) * 100}%` }}
                       />
                     )}
                   </div>
@@ -254,7 +244,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-center justify-between border-t border-gray-100 pt-3 dark:border-white/[0.05]">
                     <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Total</span>
-                    <span className="text-sm font-bold text-gray-900 dark:text-white">{rentals.length}</span>
+                    <span className="text-sm font-bold text-gray-900 dark:text-white">{totalRentals}</span>
                   </div>
                 </div>
               </div>
@@ -269,25 +259,25 @@ export default function Home() {
                 <div className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3 dark:bg-white/[0.03]">
                   <span className="text-sm text-gray-600 dark:text-gray-300">Active Houses</span>
                   <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {houses.filter((h) => h.isActive).length}
+                    {(summary?.houses ?? []).filter((h: any) => h.isActive).length}
                   </span>
                 </div>
                 <div className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3 dark:bg-white/[0.03]">
                   <span className="text-sm text-gray-600 dark:text-gray-300">Active Renters</span>
                   <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {renters.filter((r) => r.isActive).length}
+                    {(summary?.renters ?? []).filter((r: any) => r.isActive).length}
                   </span>
                 </div>
                 <div className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3 dark:bg-white/[0.03]">
                   <span className="text-sm text-gray-600 dark:text-gray-300">Auto-Renew Rentals</span>
                   <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {rentals.filter((r) => r.autoRenew).length}
+                    {activeRentals.filter((r: any) => r.autoRenew).length}
                   </span>
                 </div>
                 <div className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3 dark:bg-white/[0.03]">
                   <span className="text-sm text-gray-600 dark:text-gray-300">Active Users</span>
                   <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {users.filter((u) => u.profileIsActive).length}
+                    {(summary?.users ?? []).filter((u: any) => u.profileIsActive).length}
                   </span>
                 </div>
               </div>

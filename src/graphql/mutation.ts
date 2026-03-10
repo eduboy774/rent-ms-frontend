@@ -183,6 +183,49 @@ mutation UpdateHouseMutation($input: HouseInputObject) {
 `
 
 
+export const UPDATE_USER_PROFILE = gql
+`
+mutation UpdateUserProfileMutation($input: UserInputObject!) {
+  updateUserProfileMutation(input: $input) {
+    response {
+      id
+      status
+      code
+      message
+    }
+    data {
+      id
+      userProfile {
+        id
+        profileUniqueId
+        userFirstName
+        userLastName
+        userEmail
+        profilePhone
+        profileTitle
+        profilePhoto
+        profileIsActive
+        profileType
+        profileLevel
+        profileGender
+      }
+      userRoles {
+        id
+        roleUniqueId
+        roleName
+        roleDescription
+        rolePermissions {
+          id
+          permissionUniqueId
+          permissionName
+          permissionCode
+        }
+      }
+    }
+  }
+}
+`
+
 export const ACTIVATE_OR_DEACTIVATE_USER = gql
 `
 mutation DeleteUsersMutation($profileUniqueId: String!) {

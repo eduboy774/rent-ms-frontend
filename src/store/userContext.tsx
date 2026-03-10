@@ -3,12 +3,15 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 // Define the shape of the user profile data
 interface UserProfile {
   // Define the properties of your user profile here
+  profileUniqueId: string;
   userFirstName:string;
   userLastName:string;
   userEmail:string;
   profilePhone:string;
+  profileTitle:string;
   profileGender:string;
   profileType:string;
+  profileLevel:string;
   profileIsActive:boolean;
 }
 
