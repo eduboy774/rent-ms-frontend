@@ -369,3 +369,52 @@ query GetDashboardSummary {
   }
 }
 `;
+
+export const GET_DISTRICTS = gql`
+query GetDistricts($filtering: DistrictFilteringInputObject) {
+  getDistricts(filtering: $filtering) {
+    data {
+      id
+      districtUniqueId
+      districtName
+      districtPostcode
+      districtNapaId
+      districtParentRegion {
+        id
+        regionalUniqueId
+        reginalName
+        reginalPostcode
+        reginalNapaId
+        reginalCode
+      }
+    }
+    response {
+      id
+      status
+      code
+      message
+    }
+  }
+}
+`;
+
+export const GET_REGIONS = gql`
+query GetRegions($filtering: RegionFilteringInputObject) {
+  getRegions(filtering: $filtering) {
+    data {
+      id
+      regionalUniqueId
+      reginalName
+      reginalPostcode
+      reginalNapaId
+      reginalCode
+    }
+    response {
+      id
+      status
+      code
+      message
+    }
+  }
+}
+`;
