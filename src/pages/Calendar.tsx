@@ -7,6 +7,7 @@ import { EventInput, DateSelectArg, EventClickArg } from "@fullcalendar/core";
 import { Modal } from "../components/ui/modal";
 import { useModal } from "../hooks/useModal";
 import PageMeta from "../components/common/PageMeta";
+import PageLayout from "../components/common/PageLayout";
 
 interface CalendarEvent extends EventInput {
   extendedProps: {
@@ -34,7 +35,6 @@ const Calendar: React.FC = () => {
   };
 
   useEffect(() => {
-    // Initialize with some events
     setEvents([
       {
         id: "1",
@@ -77,7 +77,6 @@ const Calendar: React.FC = () => {
 
   const handleAddOrUpdateEvent = () => {
     if (selectedEvent) {
-      // Update existing event
       setEvents((prevEvents) =>
         prevEvents.map((event) =>
           event.id === selectedEvent.id
@@ -92,7 +91,6 @@ const Calendar: React.FC = () => {
         )
       );
     } else {
-      // Add new event
       const newEvent: CalendarEvent = {
         id: Date.now().toString(),
         title: eventTitle,
@@ -116,12 +114,15 @@ const Calendar: React.FC = () => {
   };
 
   return (
-    <>
+    <PageLayout
+      title="Calendar"
+      description="Schedule and manage events"
+    >
       <PageMeta
-        title="React.js Calendar Dashboard | TailAdmin - Next.js Admin Dashboard Template"
-        description="This is React.js Calendar Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+        title="Calendar | RentMS"
+        description="Manage your calendar and events"
       />
-      <div className="rounded-2xl border  border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+      <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="custom-calendar">
           <FullCalendar
             ref={calendarRef}
@@ -264,7 +265,7 @@ const Calendar: React.FC = () => {
           </div>
         </Modal>
       </div>
-    </>
+    </PageLayout>
   );
 };
 

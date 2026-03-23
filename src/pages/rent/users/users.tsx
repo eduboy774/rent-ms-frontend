@@ -18,11 +18,11 @@ import {
 import { ACTIVATE_OR_DEACTIVATE_USER, CREATE_USER } from "../../../graphql/mutation";
 import UserTable from "./UserTable";
 import PageCard from "../../../components/common/PageCard";
+import PageLayout from "../../../components/common/PageLayout";
 
 export default function UserPage() {
   const { isOpen, openModal, closeModal } = useModal();
 
-  // Form state
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -37,18 +37,15 @@ export default function UserPage() {
 
   const { error, info } = useToast();
 
-  // GraphQL mutations
   const [createUser] = useMutation<CreateUserMutation, CreateUserVars>(CREATE_USER);
   const [toggleUser] = useMutation(ACTIVATE_OR_DEACTIVATE_USER);
 
-  // Default user filter
   const defaultUserFilter: UserFilteringInputObject = {
     profileType: null,
     profileIsActive: true,
     pageNumber: 1,
   };
 
-  // Fetch users
   useQuery(GET_USERS, {
     variables: { filtering: defaultUserFilter },
     fetchPolicy:"network-only",
@@ -57,7 +54,6 @@ export default function UserPage() {
     },
   });
 
-  // Delete / Deactivate user
   const handleDelete = (profileUniqueId: string) => {
     const toastId = toast(
       <ConfirmToast
@@ -82,7 +78,6 @@ export default function UserPage() {
     );
   };
 
-  // Save / Create user
   const handleSave = async () => {
     if (!firstName || !lastName || !email) {
       info("First name, last name and email are required");
@@ -105,14 +100,10 @@ export default function UserPage() {
       const { data } = await createUser({ variables: { input } });
       const response = data?.createUsersMutation?.response;
       const newUser = data?.createUsersMutation?.data?.userProfile;
-      console.log('newUser',newUser);
-      
       
       if (response?.code == 9000 && newUser) {
-         
         setUsers((prev) => [newUser, ...prev]);
         closeModal();
-        // this.a
       } else {
         error(response?.message || "Failed to create user");
       }
@@ -153,32 +144,37 @@ export default function UserPage() {
   };
 
   return (
-    <PageCard title="Users" count={users.length} countLabel="user" onAdd={handleAdd} addLabel="Add User">
-      <UserTable users={users} onDelete={handleDelete} onEdit={handleEdit} />
-      
-      <UserModal
-      isOpen={isOpen}
-      onClose={closeModal}
-      firstName={firstName}
-      setFirstName={setFirstName}
-      lastName={lastName}
-      setLastName={setLastName}
-      email={email}
-      setEmail={setEmail}
-      phone={phone}
-      setPhone={setPhone}
-      profileType={profileType}
-      setProfileType={setProfileType}
-      profileTitle={profileTitle}
-      setProfileTitle={setProfileTitle}
-      profileGender={profileGender}
-      setProfileGender={setProfileGender}
-      password={password}
-      setPassword={setPassword}
-      onSave={handleSave}
-      isEditing={isEditing}
-    />
+    <PageLayout
+      title="Users"
+      description="Manage system users"
+    >
+      <PageCard title="Users" count={users.length} countLabel="user" onAdd={handleAdd} addLabel="Add User">
+        <UserTable users={users} onDelete={handleDelete} onEdit={handleEdit} />
+        
+        <UserModal
+        isOpen={isOpen}
+        onClose={closeModal}
+        firstName={firstName}
+        setFirstName={setFirstName}
+        lastName={lastName}
+        setLastName={setLastName}
+        email={email}
+        setEmail={setEmail}
+        phone={phone}
+        setPhone={setPhone}
+        profileType={profileType}
+        setProfileType={setProfileType}
+        profileTitle={profileTitle}
+        setProfileTitle={setProfileTitle}
+        profileGender={profileGender}
+        setProfileGender={setProfileGender}
+        password={password}
+        setPassword={setPassword}
+        onSave={handleSave}
+        isEditing={isEditing}
+      />
 
-    </PageCard>
+      </PageCard>
+    </PageLayout>
   );
 }

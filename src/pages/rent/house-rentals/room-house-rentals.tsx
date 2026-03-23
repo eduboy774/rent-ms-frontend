@@ -13,6 +13,7 @@ import ConfirmToast from "../../../components/notifications/confirmation";
 import { toast } from "react-toastify";
 import { ACTIVATE_OR_DEACTIVATE_HOUSE_RENTAL, CREATE_HOUSE_RENTAL, UPDATE_HOUSE_RENTAL } from "../../../graphql/mutation";
 import PageCard from "../../../components/common/PageCard";
+import PageLayout from "../../../components/common/PageLayout";
 
 export default function RoomHouseRentals() {
   
@@ -147,7 +148,7 @@ const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE
          if (amount == 0 || status =="" ){
               info('House Rental Description is Empty')
          }
-    
+   
           const input: HouseRentalInputObject = {
           uuid: isEditing ? editingUuid : null,
           amount:amount,
@@ -193,9 +194,9 @@ const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE
       }
       };
      }
-       
-  
-  
+        
+   
+ 
 
   if (LoadingHouseRental) return null;
   if (HouseRentalError) return null;
@@ -232,32 +233,36 @@ const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE
   };
 
   return (
-
-    <PageCard title="House Rentals" count={houseRentals.length} countLabel="rental" onAdd={handleAdd} addLabel="Add House Rental">
-    <RoomHouseRentalsTable houseRentals={houseRentals} onDelete={handleDelete} onEdit={handleEdit} />
-    <HouseRentalModal
-          isOpen={isOpen}
-          onClose={closeModal}
-          amount={amount}
-          noticePeriodDays={noticePeriodDays}
-          autoRenew={autoRenew}
-          setAutoRenew={setAutoRenew}
-          duration={duration}
-          setDuration={setDuration}
-          setAmount={setAmount}
-          setNoticePeriodDays={setNoticePeriodDays}
-          status={status}
-          setStatus={setStatus}
-          owners ={options}
-          renters={renterOptions}
-          renterUuid={renterUuid}
-          houseUuid={houseUuid}
-          houses={houseOptions}
-          setHouseUuid={setHouseUid}
-          setRenterUuid={setRenterUuid}
-          onSave={handleSave}
-          isEditing={isEditing}
-          />
-    </PageCard>
+    <PageLayout
+      title="House Rentals"
+      description="Manage rental agreements"
+    >
+      <PageCard title="House Rentals" count={houseRentals.length} countLabel="rental" onAdd={handleAdd} addLabel="Add House Rental">
+      <RoomHouseRentalsTable houseRentals={houseRentals} onDelete={handleDelete} onEdit={handleEdit} />
+      <HouseRentalModal
+            isOpen={isOpen}
+            onClose={closeModal}
+            amount={amount}
+            noticePeriodDays={noticePeriodDays}
+            autoRenew={autoRenew}
+            setAutoRenew={setAutoRenew}
+            duration={duration}
+            setDuration={setDuration}
+            setAmount={setAmount}
+            setNoticePeriodDays={setNoticePeriodDays}
+            status={status}
+            setStatus={setStatus}
+            owners ={options}
+            renters={renterOptions}
+            renterUuid={renterUuid}
+            houseUuid={houseUuid}
+            houses={houseOptions}
+            setHouseUuid={setHouseUid}
+            setRenterUuid={setRenterUuid}
+            onSave={handleSave}
+            isEditing={isEditing}
+            />
+      </PageCard>
+    </PageLayout>
   );
 }

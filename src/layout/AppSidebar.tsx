@@ -4,8 +4,9 @@ import { Link, useLocation } from "react-router";
 import {
   ChevronDownIcon,
   GridIcon,
-  HorizontaLDots,
-  ListIcon,
+  BoxCubeIcon,
+  FileIcon,
+  CalenderIcon,
   UserCircleIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
@@ -24,20 +25,33 @@ const navItems: NavItem[] = [
     path: "/home",
   },
   {
-    icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/profile",
+    name: "Management",
+    icon: <BoxCubeIcon />,
+    subItems: [
+      { name: "Houses", path: "/houses" },
+      { name: "Tenants", path: "/renters" },
+    ],
   },
   {
-    name: "Settings",
-    icon: <ListIcon />,
+    name: "Rental",
+    icon: <FileIcon />,
+    subItems: [
+      { name: "House Rentals", path: "/house-rentals" },
+      { name: "Payments", path: "/payments" },
+      { name: "Notifications", path: "/notifications" },
+    ],
+  },
+  {
+    icon: <CalenderIcon />,
+    name: "Calendar",
+    path: "/calendar",
+  },
+  {
+    name: "Administration",
+    icon: <UserCircleIcon />,
     subItems: [
       { name: "Users", path: "/users" },
-      { name: "Houses", path: "/houses" },
-      { name: "Renters", path: "/renters" },
-      { name: "House Rentals", path: "/house-rentals" },
-      { name: "Notification", path: "/notifications" },
-      { name: "Payment", path: "/payments" },
+      { name: "My Profile", path: "/profile" },
     ],
   },
 ];
@@ -116,7 +130,7 @@ const AppSidebar: React.FC = () => {
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* ─── Logo / Brand ─── */}
+      {/* Logo / Brand */}
       <div className="flex h-[72px] items-center border-b border-gray-200 px-5 dark:border-gray-800">
         <Link to="/home" className="flex items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-500 shadow-sm">
@@ -143,23 +157,14 @@ const AppSidebar: React.FC = () => {
         </Link>
       </div>
 
-      {/* ─── Navigation ─── */}
+      {/* Navigation */}
       <div className="flex flex-1 flex-col overflow-y-auto px-4 py-5 no-scrollbar">
-        <div className="mb-3">
-          <h2
-            className={`mb-2 flex text-[11px] font-semibold uppercase tracking-wider text-gray-400 ${
-              !isExpanded && !isHovered ? "lg:justify-center" : "px-3"
-            }`}
-          >
-            {sidebarOpen ? "Menu" : <HorizontaLDots className="size-5" />}
-          </h2>
-        </div>
 
         <ul className="flex flex-col gap-1">
           {navItems.map((nav, index) => (
             <li key={nav.name}>
               {nav.subItems ? (
-                /* ── Collapsible parent ── */
+                /* Collapsible parent */
                 <button
                   onClick={() => handleSubmenuToggle(index)}
                   className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
@@ -193,7 +198,7 @@ const AppSidebar: React.FC = () => {
                   )}
                 </button>
               ) : (
-                /* ── Direct link ── */
+                /* Direct link */
                 nav.path && (
                   <Link
                     to={nav.path}
@@ -217,7 +222,7 @@ const AppSidebar: React.FC = () => {
                 )
               )}
 
-              {/* ── Sub-menu ── */}
+              {/* Sub-menu */}
               {nav.subItems && sidebarOpen && (
                 <div
                   ref={(el) => {
@@ -255,7 +260,7 @@ const AppSidebar: React.FC = () => {
         </ul>
       </div>
 
-      {/* ─── Footer ─── */}
+      {/* Footer */}
       {sidebarOpen && (
         <div className="border-t border-gray-200 px-5 py-4 dark:border-gray-800">
           <p className="text-center text-xs text-gray-400 dark:text-gray-500">

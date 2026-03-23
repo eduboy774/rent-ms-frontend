@@ -12,6 +12,7 @@ import { RenterFilteringInputObject, RenterInputObject, Renters } from "../../..
 import RenterModal from "./renter-modal";
 import RenterTable from "./renter-table";
 import PageCard from "../../../components/common/PageCard";
+import PageLayout from "../../../components/common/PageLayout";
 
 export default function Renter() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -149,23 +150,28 @@ export default function Renter() {
   };
 
   return (
-    <PageCard title="Renters" count={renters.length} countLabel="renter" onAdd={handleAdd} addLabel="Add Renter">
-      <RenterTable renters={renters} onDelete={handleDelete} onEdit={handleEdit} />
+    <PageLayout
+      title="Tenants"
+      description="Manage your tenants"
+    >
+      <PageCard title="Tenants" count={renters.length} countLabel="tenant" onAdd={handleAdd} addLabel="Add Tenant">
+        <RenterTable renters={renters} onDelete={handleDelete} onEdit={handleEdit} />
 
-      <RenterModal
-        isOpen={isOpen}
-        onClose={closeModal}
-        fullName={renterName}
-        setFullName={setRenterName}
-        phoneNumber={phoneNumber}
-        setPhoneNumber={setPhoneNumber}
-        nidaNumber={nidaNumber}
-        setNidaNumber={setNidaNumber}
-        renterTitle={profileTitle}
-        setRenterTitle={setProfileTitle}
-        onSave={handleSave}
-        isEditing={isEditing}
-      />
-    </PageCard>
+        <RenterModal
+          isOpen={isOpen}
+          onClose={closeModal}
+          fullName={renterName}
+          setFullName={setRenterName}
+          phoneNumber={phoneNumber}
+          setPhoneNumber={setPhoneNumber}
+          nidaNumber={nidaNumber}
+          setNidaNumber={setNidaNumber}
+          renterTitle={profileTitle}
+          setRenterTitle={setProfileTitle}
+          onSave={handleSave}
+          isEditing={isEditing}
+        />
+      </PageCard>
+    </PageLayout>
   );
 }

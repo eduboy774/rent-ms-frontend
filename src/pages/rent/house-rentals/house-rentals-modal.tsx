@@ -138,7 +138,7 @@ export default function HouseRentalModal({
             <div className="col-span-2 lg:col-span-1">
                 <Label>Notice Period</Label>
                 <Input
-                  type="noticePeriodDays"
+                  type="number"
                   placeholder="Notice Period"
                   value={noticePeriodDays ?? ""}
                   onChange={(e) => setNoticePeriodDays(e.target.value ? Number(e.target.value) : null)}

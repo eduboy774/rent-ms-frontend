@@ -4,6 +4,7 @@ import { useQuery } from '@apollo/client';
 import { NotificationFilteringInputObject, Notifications } from "../../../types/notification";
 import NotificationTable from "./notificationsTable";
 import PageCard from "../../../components/common/PageCard";
+import PageLayout from "../../../components/common/PageLayout";
 
 
 export default function Notification() {
@@ -23,8 +24,13 @@ useQuery(GET_NOTIFICATIONS, {
 
 
   return (
-    <PageCard title="Notifications" count={notifications.length} countLabel="notification">
-      <NotificationTable notifications={notifications} />
-    </PageCard>
+    <PageLayout
+      title="Notifications"
+      description="View and manage notifications"
+    >
+      <PageCard title="Notifications" count={notifications.length} countLabel="notification">
+        <NotificationTable notifications={notifications} />
+      </PageCard>
+    </PageLayout>
   );
 }

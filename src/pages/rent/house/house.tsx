@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import HouseModal from "./houseModal";
 import HouseTable from "./houseTable";
 import PageCard from "../../../components/common/PageCard";
+import PageLayout from "../../../components/common/PageLayout";
 
 
 export default function House() {
@@ -91,98 +92,103 @@ useQuery(GET_HOUSES, {
 
 
 
-  const handleSave = async () => {
-    
-     if (houseName == "" || message =="" ){
-          info('House Name Description is Empty')
-     }
-
-      const input: HouseInputObject = {
-      uuid: isEditing ? editingUuid : null,
-      name:houseName,
-      description: message,
-      ownerUuid: ownerUuid,
-    };
-
- if(houseName && message){
-     try {
-
-    if (isEditing) {
-      const { data } = await updateHouse({ variables: { input } });
-      const responseData: any = data?.updateHouseMutation;
-      const updatedHouse = responseData?.data;
-
-      if (responseData?.response?.code === 9000 && updatedHouse) {
-        success(responseData.response.message);
-        setHouses((prev) =>
-          prev.map((h) => (h.uuid === editingUuid ? updatedHouse : h))
-        );
-        closeModal();
-      } else {
-        error(responseData?.response?.message);
-      }
-    } else {
-      const { data } = await createHouse({ variables: { input } });
-      const responceHouseData: any = data?.createHouseMutation;
-      const newHouse = data?.createHouseMutation.data;
-
-      if (responceHouseData?.response?.code === 9000 && newHouse) {
-        success(responceHouseData.response.message);
-        setHouses((prev) => [newHouse, ...prev]);
-        closeModal();
-      } else {
-        error(responceHouseData.response.message);
-      }
-    }
-  } catch (err) {
-        console.error("Mutation error:",err);
-  }
-  };
- }
+ const handleSave = async () => {
    
+    if (houseName == "" || message =="" ){
+         info('House Name Description is Empty')
+    }
 
-  
-
-  const resetForm = () => {
-    setHouseName("");
-    setMessage("");
-    setOwnerUuid(null);
-    setIsEditing(false);
-    setEditingUuid(null);
+    const input: HouseInputObject = {
+    uuid: isEditing ? editingUuid : null,
+    name:houseName,
+    description: message,
+    ownerUuid: ownerUuid,
   };
 
-  const handleAdd = () => {
-    resetForm();
-    openModal();
-  };
+if(houseName && message){
+   try {
 
-  const handleEdit = (house: House) => {
-    setHouseName(house.name || "");
-    setMessage(house.description || "");
-    setOwnerUuid(house.ownerUuid || house.ownerInfo?.profileUniqueId || null);
-    setEditingUuid(house.uuid);
-    setIsEditing(true);
-    openModal();
-  };
+  if (isEditing) {
+    const { data } = await updateHouse({ variables: { input } });
+    const responseData: any = data?.updateHouseMutation;
+    const updatedHouse = responseData?.data;
 
-  return (
-    <PageCard title="Houses" count={houses.length} countLabel="house" onAdd={handleAdd} addLabel="Add House">
-    <HouseTable houses={houses} onDelete={handleDelete} onEdit={handleEdit} />
+    if (responseData?.response?.code === 9000 && updatedHouse) {
+      success(responseData.response.message);
+      setHouses((prev) =>
+        prev.map((h) => (h.uuid === editingUuid ? updatedHouse : h))
+      );
+      closeModal();
+    } else {
+      error(responseData?.response?.message);
+    }
+  } else {
+    const { data } = await createHouse({ variables: { input } });
+    const responceHouseData: any = data?.createHouseMutation;
+    const newHouse = data?.createHouseMutation.data;
 
-     <HouseModal
-      isOpen={isOpen}
-      onClose={closeModal}
-      houseName={houseName}
-      setHouseName={setHouseName}
-      message={message}
-      setMessage={setMessage}
-      owners ={options}
-      ownerUuid={ownerUuid}
-      setOwnerUuid ={setOwnerUuid}  
-      onSave={handleSave}
-      isEditing={isEditing}
-      />
-      
-    </PageCard>
-  );
+    if (responceHouseData?.response?.code === 9000 && newHouse) {
+      success(responceHouseData.response.message);
+      setHouses((prev) => [newHouse, ...prev]);
+      closeModal();
+    } else {
+      error(responceHouseData.response.message);
+    }
+  }
+} catch (err) {
+      console.error("Mutation error:",err);
+  }
+  }
+ }
+
+
+ 
+
+ const resetForm = () => {
+   setHouseName("");
+   setMessage("");
+   setOwnerUuid(null);
+   setIsEditing(false);
+   setEditingUuid(null);
+ };
+
+ const handleAdd = () => {
+   resetForm();
+   openModal();
+ };
+
+ const handleEdit = (house: House) => {
+   setHouseName(house.name || "");
+   setMessage(house.description || "");
+   setOwnerUuid(house.ownerUuid || house.ownerInfo?.profileUniqueId || null);
+   setEditingUuid(house.uuid);
+   setIsEditing(true);
+   openModal();
+ };
+
+ return (
+  <PageLayout
+   title="Houses"
+   description="Manage your rental properties"
+  >
+   <PageCard title="Houses" count={houses.length} countLabel="house" onAdd={handleAdd} addLabel="Add House">
+   <HouseTable houses={houses} onDelete={handleDelete} onEdit={handleEdit} />
+
+    <HouseModal
+     isOpen={isOpen}
+     onClose={closeModal}
+     houseName={houseName}
+     setHouseName={setHouseName}
+     message={message}
+     setMessage={setMessage}
+     owners ={options}
+     ownerUuid={ownerUuid}
+     setOwnerUuid ={setOwnerUuid}  
+     onSave={handleSave}
+     isEditing={isEditing}
+     />
+    
+   </PageCard>
+   </PageLayout>
+ );
 }

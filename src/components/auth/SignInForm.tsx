@@ -54,10 +54,10 @@ export default function SignInForm() {
               <div className="space-y-6">
                 <div>
                   <Label>
-                    Email <span className="text-error-500">*</span>{" "}
+                    Username<span className="text-error-500">*</span>{" "}
                   </Label>
                   <Input 
-                  placeholder="info@gmail.com"
+                  placeholder="Enter your username"
                   onChange={event => setUserName(event.target.value)}
                   required={true}
                   />
