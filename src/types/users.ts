@@ -44,6 +44,7 @@ export interface UserInputObject {
   profilePhone?: string | null;
   profileLevel?: string | null;
   profileGender?: string | null;
+  profileIsActive?: boolean | null;
   password?: string | null;
 }
 

@@ -10,7 +10,7 @@ interface ButtonProps {
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean; // Disabled state
   className?: string; // Disabled state
-  type?:'submtit' | 'button'
+  type?: "submit" | "button"
 }
 
 const Button: React.FC<ButtonProps> = ({

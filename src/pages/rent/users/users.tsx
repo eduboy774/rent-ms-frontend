@@ -15,7 +15,7 @@ import {
   CreateUserMutation,
   CreateUserVars,
 } from "../../../types/users";
-import { ACTIVATE_OR_DEACTIVATE_USER, CREATE_USER } from "../../../graphql/mutation";
+import { ACTIVATE_OR_DEACTIVATE_USER, CREATE_USER, UPDATE_USERS } from "../../../graphql/mutation";
 import UserTable from "./UserTable";
 import PageCard from "../../../components/common/PageCard";
 import PageLayout from "../../../components/common/PageLayout";
@@ -32,6 +32,7 @@ export default function UserPage() {
   const [profileGender, setProfileGender] = useState("MALE");
   const [password, setPassword] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [profileUniqueId, setProfileUniqueId] = useState<string | null>(null);
 
   const [users, setUsers] = useState<User[]>([]);
 
@@ -39,6 +40,7 @@ export default function UserPage() {
 
   const [createUser] = useMutation<CreateUserMutation, CreateUserVars>(CREATE_USER);
   const [toggleUser] = useMutation(ACTIVATE_OR_DEACTIVATE_USER);
+  const [updateUser] = useMutation(UPDATE_USERS);
 
   const defaultUserFilter: UserFilteringInputObject = {
     profileType: null,
@@ -84,28 +86,63 @@ export default function UserPage() {
       return;
     }
 
-    const input: UserInputObject = {
-      userFirstName: firstName,
-      userLastName: lastName,
-      userEmail: email,
-      profilePhone: phone,
-      profileType: "NORMAL_PROFILE",
-      profileTitle: profileTitle,
-      profileGender: profileGender,
-      password: password,
-      profileLevel:'REGION' 
-    };
-
     try {
-      const { data } = await createUser({ variables: { input } });
-      const response = data?.createUsersMutation?.response;
-      const newUser = data?.createUsersMutation?.data?.userProfile;
-      
-      if (response?.code == 9000 && newUser) {
-        setUsers((prev) => [newUser, ...prev]);
-        closeModal();
+      if (isEditing && profileUniqueId) {
+        const { data } = await updateUser({
+          variables: {
+            input: {
+              profileUniqueId,
+              userFirstName: firstName,
+              userLastName: lastName,
+              userEmail: email,
+              profilePhone: phone,
+              profileType,
+              profileTitle,
+              profileGender,
+              profileLevel: "DISTRICT",
+              profilePhoto: null,
+            },
+          },
+        });
+
+        const response = data?.updateUsersMutation?.response;
+        const updatedUser = data?.updateUsersMutation?.data?.userProfile;
+
+        if (response?.id == "1" && updatedUser) {
+          setUsers((prev) =>
+            prev.map((u) =>
+              u.profileUniqueId === profileUniqueId ? updatedUser : u
+            )
+          );
+          closeModal();
+          resetForm();
+        } else {
+          error(response?.message || "Failed to update user");
+        }
       } else {
-        error(response?.message || "Failed to create user");
+        const input: UserInputObject = {
+          userFirstName: firstName,
+          userLastName: lastName,
+          userEmail: email,
+          profilePhone: phone,
+          profileType: "NORMAL_PROFILE",
+          profileTitle: profileTitle,
+          profileGender: profileGender,
+          password: password,
+          profileLevel: "REGION",
+        };
+
+        const { data } = await createUser({ variables: { input } });
+        const response = data?.createUsersMutation?.response;
+        const newUser = data?.createUsersMutation?.data?.userProfile;
+
+        if (response?.code == 9000 && newUser) {
+          setUsers((prev) => [newUser, ...prev]);
+          closeModal();
+          resetForm();
+        } else {
+          error(response?.message || "Failed to create user");
+        }
       }
     } catch (err) {
       console.error(err);
@@ -122,6 +159,7 @@ export default function UserPage() {
     setProfileTitle("Mr");
     setProfileGender("MALE");
     setPassword("");
+    setProfileUniqueId(null);
     setIsEditing(false);
   };
 
@@ -139,6 +177,7 @@ export default function UserPage() {
     setProfileTitle(user.profileTitle || "Mr");
     setProfileGender(user.profileGender || "MALE");
     setPassword("");
+    setProfileUniqueId(user.profileUniqueId || null);
     setIsEditing(true);
     openModal();
   };

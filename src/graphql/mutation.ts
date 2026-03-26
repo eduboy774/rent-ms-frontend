@@ -183,14 +183,13 @@ mutation UpdateHouseMutation($input: HouseInputObject) {
 `
 
 
-export const UPDATE_USER_PROFILE = gql
+export const UPDATE_USERS = gql
 `
-mutation UpdateUserProfileMutation($input: UserInputObject!) {
-  updateUserProfileMutation(input: $input) {
+mutation UpdateUsersMutation($input: UserInputObject!) {
+  updateUsersMutation(input: $input) {
     response {
       id
       status
-      code
       message
     }
     data {
@@ -214,12 +213,6 @@ mutation UpdateUserProfileMutation($input: UserInputObject!) {
         roleUniqueId
         roleName
         roleDescription
-        rolePermissions {
-          id
-          permissionUniqueId
-          permissionName
-          permissionCode
-        }
       }
     }
   }

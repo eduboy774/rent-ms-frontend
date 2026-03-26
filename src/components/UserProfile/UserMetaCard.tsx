@@ -8,7 +8,7 @@ import Label from "../form/Label";
 import { useUserContext } from "../../store/userContext";
 import { getInitials } from "../../utils/getInitials";
 import { useToast } from "../notifications/useToast";
-import { UPDATE_USER_PROFILE } from "../../graphql/mutation";
+import { UPDATE_USERS } from "../../graphql/mutation";
 
 export default function UserMetaCard() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -23,9 +23,9 @@ export default function UserMetaCard() {
     profilePhone: "",
   });
 
-  const [updateProfile, { loading }] = useMutation(UPDATE_USER_PROFILE, {
+  const [updateProfile, { loading }] = useMutation(UPDATE_USERS, {
     onCompleted: (data) => {
-      const result = data?.updateUserProfileMutation;
+      const result = data?.updateUsersMutation;
       if (result?.response?.status) {
         toast.success(result.response.message ?? "Profile updated successfully.");
         if (userProfileAndRoleData) {
@@ -33,7 +33,7 @@ export default function UserMetaCard() {
             ...userProfileAndRoleData,
             data: {
               ...userProfileAndRoleData.data,
-              userProfile: result.data.userProfile,
+              userProfile: result.data?.userProfile,
             },
           });
         }

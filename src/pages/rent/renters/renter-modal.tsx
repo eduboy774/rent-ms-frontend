@@ -125,7 +125,7 @@ export default function RenterModal({
                 onSave();
               }}
             >
-              Save Room
+              Save Changes
             </Button>
           </div>
         </form>

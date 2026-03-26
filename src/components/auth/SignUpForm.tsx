@@ -156,10 +156,10 @@ export default function SignUpForm() {
         <p className="text-center text-sm text-gray-600 dark:text-gray-400">
           Already have an account?{" "}
           <Link
-            to="/signin"
+            to="/ "
             className="font-semibold text-orange-500 transition-colors hover:text-orange-600 dark:text-orange-400"
           >
-            Sign In
+            Login
           </Link>
         </p>
       </div>
