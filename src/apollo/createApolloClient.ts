@@ -59,5 +59,5 @@ const createApolloClient = (): ApolloClient<NormalizedCacheObject> => {
   return client;
 };
 
+export const apolloClient = createApolloClient();
 export default createApolloClient;
-

@@ -51,17 +51,18 @@ export function useSignUp() {
     await createUser({
       variables: {
         input: {
+          profileUniqueId: null,
           userFirstName: firstName,
           userLastName: lastName,
           userEmail: email,
-          password: password,
-          profileTitle: "Mr",
-          profilePhone: null,
+          profilePhone: "",
+          profileTitle: "",
+          profilePhoto: "",
+          profileGender: "MALE",
           profileType: "NORMAL_PROFILE",
           profileLevel: "DISTRICT",
-          profileGender: "NONE",
-          profileIsActive: true,
-          profilePhoto: null,
+          roleUniqueId: null,
+          password: password,
         },
       },
     });

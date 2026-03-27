@@ -10,11 +10,10 @@ import { GET_USER_PROFILE } from "../graphql/queries";
 
 const LayoutContent: React.FC = () => {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
-  const { userProfileAndRoleData, setUserProfileAndRoleData } = useUserContext();
+  const { setUserProfileAndRoleData } = useUserContext();
 
-  // Fetch the current user's profile once per session (skipped if already in context)
+  // Fetch the current user's profile once per session
   const { data } = useQuery(GET_USER_PROFILE, {
-    skip: !!userProfileAndRoleData,
     fetchPolicy: "network-only",
   });
 

@@ -49,14 +49,14 @@ export interface HouseRentalInputObject {
   houseUuid?: string | null;
   renterUuid?: string | null;
 
-  duration?: string | null;         // DURATION choices
-  amount?: number | null;           // Decimal → string
+  duration?: string | null;
+  amount?: number | null;
   autoRenew?: boolean | null;
   noticePeriodDays?: number | null;
 
   status?: string | null;
-  expiredAt?: string | null;        // ISO datetime
-  terminatedAt?: string | null;     // ISO datetime
+  expiredAt?: string | null;
+  terminatedAt?: string | null;
 }
 
 /* =================================================

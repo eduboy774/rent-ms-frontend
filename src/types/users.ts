@@ -71,3 +71,26 @@ export interface CreateUserMutation {
   };
 }
 
+export interface CreateMyAccountMutation {
+  createMyAccountMutation: {
+    response: ResponseObject;
+    data: {
+      id: string;
+      user_profile: {
+        profile_unique_id: string;
+        user_first_name: string;
+        user_last_name: string;
+        user_email: string;
+        profile_phone?: string | null;
+        profile_title?: string | null;
+        profile_photo?: string | null;
+        profile_is_active: boolean;
+        profile_type?: string | null;
+        profile_level: string;
+        profile_gender: string;
+      };
+    };
+    __typename: string;
+  };
+}
+

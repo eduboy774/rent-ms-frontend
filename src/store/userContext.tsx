@@ -24,6 +24,7 @@ interface UserProfileAndRoleData {
 interface UserContextType {
   userProfileAndRoleData: UserProfileAndRoleData | null;
   setUserProfileAndRoleData: (data: UserProfileAndRoleData) => void;
+  clearUserData: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -31,8 +32,12 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [userProfileAndRoleData, setUserProfileAndRoleData] = useState<UserProfileAndRoleData | null>(null);
 
+  const clearUserData = () => {
+    setUserProfileAndRoleData(null);
+  };
+
   return (
-    <UserContext.Provider value={{ userProfileAndRoleData, setUserProfileAndRoleData }}>
+    <UserContext.Provider value={{ userProfileAndRoleData, setUserProfileAndRoleData, clearUserData }}>
       {children}
     </UserContext.Provider>
   );

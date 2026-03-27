@@ -151,12 +151,12 @@ const { loading:LoadingHouseRental,error:HouseRentalError } = useQuery(GET_HOUSE
    
           const input: HouseRentalInputObject = {
           uuid: isEditing ? editingUuid : null,
-          amount:amount,
+          amount: amount,
           status: status,
-          duration:duration,
-          autoRenew:autoRenew,
-          houseUuid:houseUuid,
-          renterUuid:renterUuid,
+          duration: duration,
+          autoRenew: autoRenew,
+          houseUuid: houseUuid,
+          renterUuid: renterUuid,
         };
     
      if(amount && status){

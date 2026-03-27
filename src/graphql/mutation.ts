@@ -37,6 +37,36 @@ mutation CreateHouseMutation($input: HouseInputObject) {
 }
 `
 
+export const CREATE_MY_ACCOUNT = gql
+`
+mutation CreateMyAccountMutation($input: UserInputObject!) {
+  createMyAccountMutation(input: $input) {
+    response {
+      id
+      status
+      code
+      message
+    }
+    data {
+      id
+      user_profile {
+        profile_unique_id
+        user_first_name
+        user_last_name
+        user_email
+        profile_phone
+        profile_title
+        profile_photo
+        profile_is_active
+        profile_type
+        profile_level
+        profile_gender
+      }
+    }
+  }
+}
+`
+
 export const UPDATE_HOUSE = gql
 `
 mutation UpdateHouseMutation($input: HouseInputObject) {
