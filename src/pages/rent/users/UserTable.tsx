@@ -19,7 +19,7 @@ const emptyIcon = (
 export default function UserTable({ users, onDelete, onEdit }: UserTableProps) {
   const columns: Column<User>[] = [
     {
-      header: "User",
+      header: "House Owner",
       render: (user) => (
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-100 text-xs font-semibold text-orange-600 dark:bg-orange-500/15 dark:text-orange-400">

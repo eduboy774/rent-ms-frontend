@@ -125,7 +125,7 @@ export default function UserPage() {
           userLastName: lastName,
           userEmail: email,
           profilePhone: phone,
-          profileType: "NORMAL_PROFILE",
+          profileType: profileType,
           profileTitle: profileTitle,
           profileGender: profileGender,
           password: password,
@@ -184,10 +184,10 @@ export default function UserPage() {
 
   return (
     <PageLayout
-      title="Users"
+      title="House Owners"
       description="Manage system users"
     >
-      <PageCard title="Users" count={users.length} countLabel="user" onAdd={handleAdd} addLabel="Add User">
+      <PageCard title="House Owners" count={users.length} countLabel="house owner" onAdd={handleAdd} addLabel="Add House Owner">
         <UserTable users={users} onDelete={handleDelete} onEdit={handleEdit} />
         
         <UserModal

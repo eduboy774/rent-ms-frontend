@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { Link, useLocation } from "react-router";
 
 import {
@@ -10,6 +10,7 @@ import {
   UserCircleIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
+import { useUserContext } from "../store/userContext";
 
 type NavItem = {
   name: string;
@@ -50,7 +51,7 @@ const navItems: NavItem[] = [
     name: "Administration",
     icon: <UserCircleIcon />,
     subItems: [
-      { name: "Users", path: "/users" },
+      { name: "Houses owner", path: "/users" },
       { name: "My Profile", path: "/profile" },
     ],
   },
@@ -59,6 +60,23 @@ const navItems: NavItem[] = [
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
+  const { userProfileAndRoleData } = useUserContext();
+  
+  const isAdmin = userProfileAndRoleData?.data?.userProfile?.profileType === 'ADMIN_PROFILE';
+
+  const filteredNavItems = useMemo(() => {
+    return navItems.map(item => {
+      if (item.name === 'Administration') {
+        return {
+          ...item,
+          subItems: item.subItems?.filter(sub => 
+            sub.path !== '/users' || isAdmin
+          )
+        };
+      }
+      return item;
+    });
+  }, [isAdmin]);
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main";
@@ -161,7 +179,7 @@ const AppSidebar: React.FC = () => {
       <div className="flex flex-1 flex-col overflow-y-auto px-4 py-5 no-scrollbar">
 
         <ul className="flex flex-col gap-1">
-          {navItems.map((nav, index) => (
+          {filteredNavItems.map((nav, index) => (
             <li key={nav.name}>
               {nav.subItems ? (
                 /* Collapsible parent */

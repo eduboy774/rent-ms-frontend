@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import NotFound from "./pages/OtherPage/NotFound";
@@ -23,12 +23,21 @@ import User from "./pages/rent/users/users";
 import Notification from "./pages/rent/notifications/notification";
 import RoomHouseRentals from "./pages/rent/house-rentals/room-house-rentals";
 import Renter from "./pages/rent/renters/renter";
+import { useUserContext } from "./store/userContext";
+
+const AdminRoute = () => {
+  const { userProfileAndRoleData } = useUserContext();
+  const isAdmin = userProfileAndRoleData?.data?.userProfile?.profileType === 'ADMIN_PROFILE';
+  
+  if (!isAdmin) return <Navigate to="/home" replace />;
+  return <Outlet />;
+};
 
 export default function App() {
   return (
-    
-    <>
      
+    <>
+      
       <Router>
       <ScrollToTop />
         <Routes>
@@ -38,15 +47,17 @@ export default function App() {
 
             {/* Start of Vilcom */}
 
-             <Route path="/users"  element={<User/>}/>
+             <Route element={<AdminRoute />}>
+               <Route path="/users"  element={<User/>}/>
+             </Route>
              <Route path="/houses"  element={<House/>}/>
              <Route path="/renters"  element={<Renter/>}/>
              <Route path="/notifications"  element={<Notification/>}/>
-              <Route path="/house-rentals"  element={<RoomHouseRentals/>}/>
+               <Route path="/house-rentals"  element={<RoomHouseRentals/>}/>
 
 
 
-
+ 
              {/* End  of Vilcom */}
 
             {/* Others Page */}
