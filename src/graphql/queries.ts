@@ -121,6 +121,7 @@ query GetRenters($filtering: RenterFilteringInputObject) {
       fullName
       phoneNumber
       nidaNumber
+      renterTitle
       isActive
     }
     response {

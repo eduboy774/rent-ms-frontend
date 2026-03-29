@@ -7,7 +7,7 @@ export interface Renters {
   fullName: string;
   phoneNumber: string;
   nidaNumber: string;
-  profileTitle: string | null;
+  renterTitle: string | null;
   isActive: boolean;
   __typename: string;
 }

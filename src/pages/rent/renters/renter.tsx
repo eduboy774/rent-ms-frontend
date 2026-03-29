@@ -82,7 +82,7 @@ export default function Renter() {
     const input: RenterInputObject = {
       uuid: isEditing ? editingUuid : null,
       fullName: renterName,
-      phoneNumber: phoneNumber,
+      phoneNumber: "255" + phoneNumber,
       nidaNumber: nidaNumber,
       renterTitle: profileTitle,
     };
@@ -143,7 +143,7 @@ export default function Renter() {
     setRenterName(renter.fullName || "");
     setPhoneNumber(renter.phoneNumber || "");
     setNidaNumber(renter.nidaNumber || "");
-    setProfileTitle(renter.profileTitle || "");
+    setProfileTitle(renter.renterTitle || "");
     setEditingUuid(renter.uuid);
     setIsEditing(true);
     openModal();

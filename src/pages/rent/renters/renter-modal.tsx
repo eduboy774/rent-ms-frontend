@@ -4,6 +4,41 @@ import Input from "../../../components/form/input/InputField";
 import Label from "../../../components/form/Label";
 import Select from "../../../components/form/Select";
 
+const formatPhoneDisplay = (value: string): string => {
+  const cleaned = value.replace(/\D/g, "");
+  const digits = cleaned.startsWith("255")
+    ? cleaned.slice(3, 12)
+    : cleaned.slice(0, 9);
+  const parts = [
+    digits.slice(0, 3),
+    digits.slice(3, 6),
+    digits.slice(6, 9),
+  ].filter(Boolean);
+  return parts.join(" ");
+};
+
+const parsePhoneNumber = (value: string): string => {
+  const cleaned = value.replace(/\D/g, "");
+  const digits = cleaned.startsWith("255")
+    ? cleaned.slice(3, 12)
+    : cleaned.slice(0, 9);
+  return digits;
+};
+
+const formatNidaDisplay = (value: string): string => {
+  const digits = value.replace(/\D/g, "").slice(0, 20);
+  const parts = [
+    digits.slice(0, 8),
+    digits.slice(8, 13),
+    digits.slice(13, 18),
+    digits.slice(18, 20),
+  ].filter(Boolean);
+  return parts.join("-");
+};
+
+const parseNidaNumber = (value: string): string => {
+  return value.replace(/\D/g, "").slice(0, 20);
+};
 
 type SelectOption = {
   label: string;
@@ -82,7 +117,7 @@ export default function RenterModal({
               <Select
                 options={profileTitleOptions}
                 placeholder="Select Title"
-                defaultValue={renterTitle}
+                value={renterTitle}
                 onChange={setRenterTitle}
               />
             </div>
@@ -90,11 +125,17 @@ export default function RenterModal({
               {/* Room Number */}
               <div>
                 <Label>Phone Number</Label>
-                <Input
-                  type="text"
-                  value={phoneNumber ?? ""}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                />
+                <div className="flex">
+                  <div className="flex items-center h-11 px-4 text-sm text-gray-700 bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">
+                    255
+                  </div>
+                  <Input
+                    type="text"
+                    value={formatPhoneDisplay(phoneNumber)}
+                    onChange={(e) => setPhoneNumber(parsePhoneNumber(e.target.value))}
+                    className="rounded-l-none max-w-[150px]"
+                  />
+                </div>
               </div>
              
 
@@ -103,8 +144,9 @@ export default function RenterModal({
                 <Label>Nida Number</Label>
                 <Input
                   type="text"
-                  value={nidaNumber ?? ""}
-                  onChange={(e) => setNidaNumber(e.target.value)}
+                  value={formatNidaDisplay(nidaNumber)}
+                  onChange={(e) => setNidaNumber(parseNidaNumber(e.target.value))}
+                  className="max-w-[220px]"
                 />
               </div>
 

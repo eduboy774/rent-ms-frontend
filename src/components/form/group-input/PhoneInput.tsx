@@ -1,5 +1,26 @@
 import { useState } from "react";
 
+const formatPhoneDisplay = (raw: string): string => {
+  const cleaned = raw.replace(/\D/g, "");
+  const digits = cleaned.startsWith("255")
+    ? cleaned.slice(0, 12)
+    : "255" + cleaned.slice(0, 9);
+  const parts = [
+    digits.slice(0, 3),
+    digits.slice(3, 6),
+    digits.slice(6, 9),
+  ].filter(Boolean);
+  return parts.join(" ");
+};
+
+const parsePhoneNumber = (value: string): string => {
+  const cleaned = value.replace(/\D/g, "");
+  const digits = cleaned.startsWith("255")
+    ? cleaned.slice(3, 12)
+    : cleaned.slice(0, 9);
+  return digits;
+};
+
 interface CountryCode {
   code: string;
   label: string;
@@ -14,12 +35,12 @@ interface PhoneInputProps {
 
 const PhoneInput: React.FC<PhoneInputProps> = ({
   countries,
-  placeholder = "+1 (555) 000-0000",
+  placeholder = "+255 XXX XXX XXX",
   onChange,
-  selectPosition = "start", // Default position is 'start'
+  selectPosition = "start",
 }) => {
-  const [selectedCountry, setSelectedCountry] = useState<string>("US");
-  const [phoneNumber, setPhoneNumber] = useState<string>("+1");
+  const [selectedCountry, setSelectedCountry] = useState<string>("TZ");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
 
   const countryCodes: Record<string, string> = countries.reduce(
     (acc, { code, label }) => ({ ...acc, [code]: label }),
@@ -36,10 +57,10 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   };
 
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newPhoneNumber = e.target.value;
-    setPhoneNumber(newPhoneNumber);
+    const raw = parsePhoneNumber(e.target.value);
+    setPhoneNumber(raw);
     if (onChange) {
-      onChange(newPhoneNumber);
+      onChange(raw);
     }
   };
 
@@ -87,7 +108,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
       {/* Input field */}
       <input
         type="tel"
-        value={phoneNumber}
+        value={formatPhoneDisplay(phoneNumber)}
         onChange={handlePhoneNumberChange}
         placeholder={placeholder}
         className={`dark:bg-dark-900 h-11 w-full ${

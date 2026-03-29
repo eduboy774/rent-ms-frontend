@@ -279,6 +279,7 @@ mutation CreateRenterMutation($input: RenterInputObject) {
       fullName
       phoneNumber
       nidaNumber
+      renterTitle
       isActive
     }
   }
@@ -301,6 +302,7 @@ mutation UpdateRenterMutation($input: RenterInputObject) {
       fullName
       phoneNumber
       nidaNumber
+      renterTitle
       isActive
     }
   }
