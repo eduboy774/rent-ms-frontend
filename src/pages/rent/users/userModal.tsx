@@ -140,7 +140,7 @@ export default function UserModal({
               <Select
                 options={profileTypeOptions}
                 placeholder="Select Profile Type"
-                defaultValue={profileType}
+                value={profileType}
                 onChange={setProfileType}
               />
             </div>
@@ -151,7 +151,7 @@ export default function UserModal({
               <Select
                 options={profileTitleOptions}
                 placeholder="Select Title"
-                defaultValue={profileTitle}
+                value={profileTitle}
                 onChange={setProfileTitle}
               />
             </div>
@@ -162,7 +162,7 @@ export default function UserModal({
               <Select
                 options={profileGenderOptions}
                 placeholder="Select Gender"
-                defaultValue={profileGender}
+                value={profileGender}
                 onChange={setProfileGender}
               />
             </div>

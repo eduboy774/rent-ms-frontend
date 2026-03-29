@@ -93,7 +93,7 @@ export default function HouseRentalModal({
               <Select
                 options={renters}
                 placeholder="Select Renter"
-                defaultValue={renterUuid ?? ""}
+                value={renterUuid ?? ""}
                 onChange={setRenterUuid}
               />
               </div>
@@ -102,7 +102,7 @@ export default function HouseRentalModal({
               <Select
                 options={houses}
                 placeholder="Select House"
-                defaultValue={houseUuid ?? ""}
+                value={houseUuid ?? ""}
                 onChange={setHouseUuid}
               />
               </div>
@@ -120,7 +120,7 @@ export default function HouseRentalModal({
               <Select
                 options={statusOptions}
                 placeholder="Select Status"
-                defaultValue={status}
+                value={status}
                 onChange={setStatus}
               />
             </div>
@@ -130,7 +130,7 @@ export default function HouseRentalModal({
               <Select
                 options={durationOptions}
                 placeholder="Select Duration"
-                defaultValue={duration}
+                value={duration}
                 onChange={setDuration}
               />
             </div>

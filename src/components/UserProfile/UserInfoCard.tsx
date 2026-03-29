@@ -158,7 +158,7 @@ export default function UserInfoCard() {
               <Label>Gender</Label>
               <Select
                 options={GENDER_OPTIONS}
-                defaultValue={form.profileGender}
+                value={form.profileGender}
                 onChange={(val) => setForm((f) => ({ ...f, profileGender: val }))}
               />
             </div>

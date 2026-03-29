@@ -479,4 +479,32 @@ mutation DeleteHouseRentalMutation($uuid: String!) {
     }
   }
 }
+`;
+
+export const FORGOT_PASSWORD = gql
 `
+mutation ForgotPasswordMutation($userEmail: String!) {
+  forgotPasswordMutation(userEmail: $userEmail) {
+    response {
+      id
+      status
+      code
+      message
+    }
+  }
+}
+`;
+
+export const RESET_PASSWORD = gql
+`
+mutation ResetPasswordMutation($input: ResetPasswordInput!) {
+  resetPasswordMutation(input: $input) {
+    response {
+      id
+      status
+      code
+      message
+    }
+  }
+}
+`;

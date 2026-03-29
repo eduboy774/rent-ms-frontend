@@ -76,6 +76,7 @@ export default function HouseModal({
               <Select
                 options={owners}
                 placeholder="Select Owner"
+                value={ownerUuid ?? ""}
                 onChange={setOwnerUuid}
               />
               </div>
