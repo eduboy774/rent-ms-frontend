@@ -25,6 +25,7 @@ import User from "./pages/rent/users/users";
 import Notification from "./pages/rent/notifications/notification";
 import RoomHouseRentals from "./pages/rent/house-rentals/room-house-rentals";
 import Renter from "./pages/rent/renters/renter";
+import Payments from "./pages/rent/payments/payments";
 import { useUserContext } from "./store/userContext";
 
 const AdminRoute = () => {
@@ -54,8 +55,9 @@ export default function App() {
              </Route>
              <Route path="/houses"  element={<House/>}/>
              <Route path="/renters"  element={<Renter/>}/>
-             <Route path="/notifications"  element={<Notification/>}/>
-               <Route path="/house-rentals"  element={<RoomHouseRentals/>}/>
+              <Route path="/notifications"  element={<Notification/>}/>
+                <Route path="/house-rentals"  element={<RoomHouseRentals/>}/>
+                <Route path="/payments"  element={<Payments/>}/>
 
 
 

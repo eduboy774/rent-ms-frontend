@@ -419,3 +419,114 @@ query GetRegions($filtering: RegionFilteringInputObject) {
   }
 }
 `;
+
+export const GET_RENTAL_PAYMENTS = gql`
+query GetRentalPayments($filtering: RentalPaymentFilteringInputObject) {
+  getRentalPayments(filtering: $filtering) {
+    data {
+      id
+      uuid
+      rental {
+        id
+        uuid
+        house {
+          id
+          uuid
+          name
+          description
+          isActive
+        }
+        renter {
+          id
+          uuid
+          fullName
+          phoneNumber
+          nidaNumber
+          renterTitle
+          isActive
+        }
+        duration
+        noticePeriodDays
+        amount
+        totalAmount
+        autoRenew
+        status
+        expiredAt
+        terminatedAt
+        createdAt
+        isActive
+      }
+      amount
+      paymentDate
+      paymentMethod
+      paymentType
+      status
+      notes
+      recordedBy {
+        id
+        profileUniqueId
+        userFirstName
+        userLastName
+        userEmail
+        profilePhone
+        profileTitle
+        profilePhoto
+        profileIsActive
+        profileType
+        profileLevel
+        profileGender
+      }
+      createdAt
+      isActive
+    }
+    response {
+      id
+      status
+      code
+      message
+    }
+  }
+}
+`;
+
+export const GET_RENTAL_PAYMENT_SUMMARY = gql`
+query GetRentalPaymentSummary($rentalUuid: String!) {
+  getRentalPaymentSummary(rentalUuid: $rentalUuid) {
+    data {
+      rentalUuid
+      totalAmount
+      totalPaid
+      balance
+      paymentCount
+      lastPaymentDate
+      paymentHistory {
+        id
+        uuid
+        amount
+        paymentDate
+        paymentMethod
+        paymentType
+        status
+        notes
+        createdAt
+        isActive
+        rental {
+          uuid
+          totalAmount
+        }
+        recordedBy {
+          profileUniqueId
+          userFirstName
+          userLastName
+        }
+      }
+    }
+    response {
+      id
+      status
+      code
+      message
+    }
+  }
+}
+`;

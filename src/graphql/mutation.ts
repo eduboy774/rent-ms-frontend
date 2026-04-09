@@ -508,3 +508,223 @@ mutation ResetPasswordMutation($input: ResetPasswordInput!) {
   }
 }
 `;
+
+export const CREATE_RENTAL_PAYMENT = gql`
+mutation CreateRentalPaymentMutation($input: RentalPaymentInputObject) {
+  createRentalPaymentMutation(input: $input) {
+    response {
+      id
+      status
+      code
+      message
+    }
+    data {
+      id
+      uuid
+      rental {
+        id
+        uuid
+        house {
+          id
+          uuid
+          name
+          description
+          isActive
+        }
+        renter {
+          id
+          uuid
+          fullName
+          phoneNumber
+          nidaNumber
+          renterTitle
+          isActive
+        }
+        duration
+        noticePeriodDays
+        amount
+        totalAmount
+        autoRenew
+        status
+        expiredAt
+        terminatedAt
+        createdAt
+        isActive
+      }
+      amount
+      paymentDate
+      paymentMethod
+      paymentType
+      status
+      notes
+      recordedBy {
+        id
+        profileUniqueId
+        userFirstName
+        userLastName
+        userEmail
+        profilePhone
+        profileTitle
+        profilePhoto
+        profileIsActive
+        profileType
+        profileLevel
+        profileGender
+      }
+      createdAt
+      isActive
+    }
+  }
+}
+`;
+
+export const UPDATE_RENTAL_PAYMENT = gql`
+mutation UpdateRentalPaymentMutation($input: RentalPaymentInputObject) {
+  updateRentalPaymentMutation(input: $input) {
+    response {
+      id
+      status
+      code
+      message
+    }
+    data {
+      id
+      uuid
+      rental {
+        id
+        uuid
+        house {
+          id
+          uuid
+          name
+          description
+          isActive
+        }
+        renter {
+          id
+          uuid
+          fullName
+          phoneNumber
+          nidaNumber
+          renterTitle
+          isActive
+        }
+        duration
+        noticePeriodDays
+        amount
+        totalAmount
+        autoRenew
+        status
+        expiredAt
+        terminatedAt
+        createdAt
+        isActive
+      }
+      amount
+      paymentDate
+      paymentMethod
+      paymentType
+      status
+      notes
+      recordedBy {
+        id
+        profileUniqueId
+        userFirstName
+        userLastName
+        userEmail
+        profilePhone
+        profileTitle
+        profilePhoto
+        profileIsActive
+        profileType
+        profileLevel
+        profileGender
+      }
+      createdAt
+      isActive
+    }
+  }
+}
+`;
+
+export const DELETE_RENTAL_PAYMENT = gql`
+mutation DeleteRentalPaymentMutation($uuid: String!) {
+  deleteRentalPaymentMutation(uuid: $uuid) {
+    response {
+      id
+      status
+      code
+      message
+    }
+  }
+}
+`;
+
+export const REFUND_RENTAL_PAYMENT = gql`
+mutation RefundRentalPaymentMutation($uuid: String!) {
+  refundRentalPaymentMutation(uuid: $uuid) {
+    response {
+      id
+      status
+      code
+      message
+    }
+    data {
+      id
+      uuid
+      rental {
+        id
+        uuid
+        house {
+          id
+          uuid
+          name
+          description
+          isActive
+        }
+        renter {
+          id
+          uuid
+          fullName
+          phoneNumber
+          nidaNumber
+          renterTitle
+          isActive
+        }
+        duration
+        noticePeriodDays
+        amount
+        totalAmount
+        autoRenew
+        status
+        expiredAt
+        terminatedAt
+        createdAt
+        isActive
+      }
+      amount
+      paymentDate
+      paymentMethod
+      paymentType
+      status
+      notes
+      recordedBy {
+        id
+        profileUniqueId
+        userFirstName
+        userLastName
+        userEmail
+        profilePhone
+        profileTitle
+        profilePhoto
+        profileIsActive
+        profileType
+        profileLevel
+        profileGender
+      }
+      createdAt
+      isActive
+    }
+  }
+}
+`;
