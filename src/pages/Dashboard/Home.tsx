@@ -12,14 +12,24 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { GET_DASHBOARD_SUMMARY } from "../../graphql/queries";
+import { GET_DASHBOARD_SUMMARY, GET_RENTAL_PAYMENTS } from "../../graphql/queries";
 import { HouseRental } from "../../types/house-rentals";
+import { RentalPayment } from "../../types/payments";
 import Badge from "../../components/ui/badge/Badge";
+import { useUserContext } from "../../store/userContext";
 
 export default function Home() {
   const { data, loading, error } = useQuery(GET_DASHBOARD_SUMMARY, {
     fetchPolicy: "network-only",
   });
+
+  const { data: paymentsData, loading: paymentsLoading } = useQuery(GET_RENTAL_PAYMENTS, {
+    variables: { filtering: {} },
+    fetchPolicy: "network-only",
+  });
+
+  const { userProfileAndRoleData } = useUserContext();
+  const userFirstName = userProfileAndRoleData?.data?.userProfile?.userFirstName ?? "User";
 
   const summary = data?.getDashboardSummary?.data;
 
@@ -28,6 +38,10 @@ export default function Home() {
   const expiredRentals = summary?.expiredRentals ?? [];
   const totalRentals = summary?.totalRentals ?? 0;
   const recentRentals = activeRentals.slice(0, 5);
+  
+  const payments = paymentsData?.getRentalPayments?.data ?? [];
+  const completedPayments = payments.filter((p: RentalPayment) => p.status === 'Completed');
+  const totalRevenue = completedPayments.reduce((sum: number, p: RentalPayment) => sum + Number(p.amount), 0);
 
   const metrics = [
     {
@@ -68,7 +82,7 @@ export default function Home() {
     },
     {
       label: "Total Revenue",
-      value: `TZS ${(summary?.totalRevenue ?? 0).toLocaleString()}`,
+      value: `TZS ${totalRevenue.toLocaleString()}`,
       trend: "+15%",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -80,57 +94,30 @@ export default function Home() {
     },
   ];
 
-  const quickActions = [
-    {
-      label: "Add House",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-        </svg>
-      ),
-      href: "/houses",
-      color: "orange",
-    },
-    {
-      label: "Add Tenant",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-        </svg>
-      ),
-      href: "/renters",
-      color: "blue",
-    },
-    {
-      label: "New Rental",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-      ),
-      href: "/house-rentals",
-      color: "emerald",
-    },
-    {
-      label: "View Payments",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
-        </svg>
-      ),
-      href: "/payments",
-      color: "violet",
-    },
-  ];
-
-  const revenueData = [
-    { name: "Jan", revenue: 4000 },
-    { name: "Feb", revenue: 3000 },
-    { name: "Mar", revenue: 5000 },
-    { name: "Apr", revenue: 4500 },
-    { name: "May", revenue: 6000 },
-    { name: "Jun", revenue: 5500 },
-  ];
+  const getMonthlyRevenue = (payments: RentalPayment[]) => {
+    const completedPayments = payments.filter(p => p.status === 'Completed');
+    const monthlyData: Record<string, number> = {};
+    
+    completedPayments.forEach(payment => {
+      const month = new Date(payment.paymentDate).toLocaleString('en-US', { month: 'short' });
+      monthlyData[month] = (monthlyData[month] || 0) + Number(payment.amount);
+    });
+    
+    return monthlyData;
+  };
+  
+  const monthlyRevenue = getMonthlyRevenue(payments);
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const currentMonth = new Date().getMonth();
+  const last6Months = Array.from({ length: 6 }, (_, i) => {
+    const idx = (currentMonth - 5 + i + 12) % 12;
+    return months[idx];
+  });
+  
+  const revenueData = last6Months.map(month => ({
+    name: month,
+    revenue: monthlyRevenue[month] || 0,
+  }));
 
   const rentalStatusData = [
     { name: "Active", value: activeRentals.length, color: "#10B981" },
@@ -163,7 +150,7 @@ export default function Home() {
     }
   };
 
-  if (loading) {
+  if (loading || paymentsLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
@@ -181,35 +168,38 @@ export default function Home() {
 
   return (
     <div className="space-y-8">
-      {/* Welcome Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Welcome back!</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Here's what's happening with your rental management today.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-          </svg>
-          {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+      {/* Welcome Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 p-6 shadow-lg md:p-8">
+        <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute -bottom-4 -left-4 h-24 w-24 rounded-full bg-white/5 blur-2xl" />
+        
+        <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold text-white md:text-3xl">
+              Welcome back, {userFirstName} 👋
+            </h1>
+            <p className="mt-2 text-sm text-white/90 md:text-base">
+              Manage your properties, track rentals, and monitor payments all in one place.
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="hidden text-sm text-white/80 md:block">
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </div>
+            <Link
+              to="/house-rentals"
+              className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-orange-600 shadow-md transition-all hover:bg-orange-50 hover:shadow-lg active:scale-[0.98]"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              Create Rental
+            </Link>
+          </div>
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {quickActions.map((action) => (
-          <Link
-            key={action.label}
-            to={action.href}
-            className={`flex items-center justify-center gap-2 rounded-xl p-4 transition-all ${getColorClasses(action.color)}`}
-          >
-            {action.icon}
-            <span className="text-sm font-medium">{action.label}</span>
-          </Link>
-        ))}
-      </div>
+   
 
       {/* Metrics Cards */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">

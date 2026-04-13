@@ -31,6 +31,7 @@ import ConfirmToast from "../../../components/notifications/confirmation";
 import PageCard from "../../../components/common/PageCard";
 import PageLayout from "../../../components/common/PageLayout";
 import Select from "../../../components/form/Select";
+import { useToast } from "../../../components/notifications/useToast";
 
 const paymentStatusOptions = [
   { label: "All Status", value: "" },
@@ -51,6 +52,7 @@ const paymentMethodOptions = [
 export default function Payments() {
   const { isOpen, openModal, closeModal } = useModal();
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
+  const { success, error, info } = useToast();
   
   const [payments, setPayments] = useState<RentalPayment[]>([]);
   const [rentals, setRentals] = useState<HouseRental[]>([]);
@@ -67,9 +69,6 @@ export default function Payments() {
     totalPaid: number;
     balance: number;
   } | null>(null);
-
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  const [lastSavedPayment, setLastSavedPayment] = useState<RentalPayment | null>(null);
 
   const defaultPaymentFilter: RentalPaymentFilteringInputObject = {
     uuid: null,
@@ -136,16 +135,16 @@ export default function Payments() {
           toast.dismiss(toastId);
           try {
             const { data } = await deletePayment({ variables: { uuid } });
-            const response = data?.deleteRentalPaymentMutation?.response;
+            const responseData: any = data?.deleteRentalPaymentMutation;
 
-            if (response?.code === "9000") {
-              setPayments((prev) => prev.filter((p) => p.uuid !== uuid));
-              toast.success("Payment deleted successfully.");
+            if (responseData?.response?.code === 9000) {
+              setPayments(prev => prev.filter(p => p.uuid !== uuid));
+              success("Payment deleted successfully.");
             } else {
-              toast.error(response?.message || "Failed to delete payment.");
+              error(responseData?.response?.message || "Failed to delete payment.");
             }
           } catch (err) {
-            toast.error("An error occurred while deleting.");
+            error("An error occurred while deleting.");
           }
         }}
         onCancel={() => toast.dismiss(toastId)}
@@ -160,16 +159,17 @@ export default function Payments() {
           toast.dismiss(toastId);
           try {
             const { data } = await refundPayment({ variables: { uuid } });
-            const response = data?.refundRentalPaymentMutation?.response;
+            const responseData: any = data?.refundRentalPaymentMutation;
+            const refundedPayment = responseData?.data;
 
-            if (response?.code === "9000") {
-              toast.success("Payment refunded successfully.");
-              refetchPayments();
+            if (responseData?.response?.code === 9000 && refundedPayment) {
+              success("Payment refunded successfully.");
+              setPayments(prev => prev.map(p => p.uuid === uuid ? refundedPayment : p));
             } else {
-              toast.error(response?.message || "Failed to refund payment.");
+              error(responseData?.response?.message || "Failed to refund payment.");
             }
           } catch (err) {
-            toast.error("An error occurred while refunding.");
+            error("An error occurred while refunding.");
           }
         }}
         onCancel={() => toast.dismiss(toastId)}
@@ -195,40 +195,50 @@ export default function Payments() {
   };
 
   const handleSave = async (input: RentalPaymentInputObject) => {
-    try {
-      if (isEditing && editingPayment) {
-        const { data } = await updatePayment({ variables: { input } });
-        const response = data?.updateRentalPaymentMutation?.response;
+    if (!input.rentalUuid) {
+      info("Please select a rental property");
+      return;
+    }
+    if (!input.amount || input.amount <= 0) {
+      info("Please enter a valid amount");
+      return;
+    }
+    if (!input.paymentMethod) {
+      info("Please select a payment method");
+      return;
+    }
 
-        if (response?.code === "9000") {
-          toast.success("Payment updated successfully.");
-          refetchPayments();
-          setLastSavedPayment(data?.updateRentalPaymentMutation?.data);
-          setShowSuccessDialog(true);
+    try {
+      if (isEditing) {
+        const { data } = await updatePayment({ variables: { input } });
+        const responseData: any = data?.updateRentalPaymentMutation;
+        const updatedPayment = responseData?.data;
+
+        if (responseData?.response?.code === 9000 && updatedPayment) {
+          success(responseData.response.message);
+          setPayments(prev => prev.map(p => p.uuid === editingPayment?.uuid ? updatedPayment : p));
           closeModal();
           resetForm();
         } else {
-          toast.error(response?.message || "Failed to update payment.");
+          error(responseData?.response?.message);
         }
       } else {
         const { data } = await createPayment({ variables: { input } });
-        const response = data?.createRentalPaymentMutation?.response;
+        const responseData: any = data?.createRentalPaymentMutation;
+        const newPayment = responseData?.data;
 
-        if (response?.code === "9000") {
-          toast.success("Payment recorded successfully.");
-          refetchPayments();
-          refetchSummary();
-          setLastSavedPayment(data?.createRentalPaymentMutation?.data);
-          setShowSuccessDialog(true);
+        if (responseData?.response?.code === 9000 && newPayment) {
+          success(responseData.response.message);
+          setPayments(prev => [newPayment, ...prev]);
           closeModal();
           resetForm();
         } else {
-          toast.error(response?.message || "Failed to record payment.");
+          error(responseData?.response?.message);
         }
       }
     } catch (err) {
       console.error("Mutation error:", err);
-      toast.error("An error occurred while saving payment.");
+      error("An error occurred while saving payment.");
     }
   };
 
@@ -294,46 +304,6 @@ export default function Payments() {
           houseName={selectedSummaryRental?.houseName}
           renterName={selectedSummaryRental?.renterName}
         />
-
-        <Modal isOpen={showSuccessDialog} onClose={() => setShowSuccessDialog(false)} className="max-w-md m-4">
-          <div className="p-6 text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 mx-auto">
-              <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h3 className="mb-2 text-lg font-semibold text-gray-800 dark:text-white">
-              {isEditing ? "Payment Updated" : "Payment Recorded"}
-            </h3>
-            {lastSavedPayment && (
-              <div className="mb-4 rounded-lg bg-gray-50 p-4 text-left dark:bg-gray-800">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  <span className="font-medium">Amount:</span> {new Intl.NumberFormat('en-TZ', { style: 'currency', currency: 'TZS' }).format(lastSavedPayment.amount)}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  <span className="font-medium">Date:</span> {lastSavedPayment.paymentDate ? new Date(lastSavedPayment.paymentDate).toLocaleDateString('en-TZ') : '-'}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  <span className="font-medium">Method:</span> {lastSavedPayment.paymentMethod || '-'}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  <span className="font-medium">Status:</span> {lastSavedPayment.status}
-                </p>
-                {lastSavedPayment.rental?.renter?.fullName && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    <span className="font-medium">Renter:</span> {lastSavedPayment.rental.renter.fullName}
-                  </p>
-                )}
-              </div>
-            )}
-            <button
-              onClick={() => setShowSuccessDialog(false)}
-              className="rounded-lg bg-green-600 px-6 py-2 text-white hover:bg-green-700"
-            >
-              OK
-            </button>
-          </div>
-        </Modal>
       </PageCard>
     </PageLayout>
   );

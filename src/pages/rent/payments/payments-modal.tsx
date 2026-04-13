@@ -5,6 +5,7 @@ import Label from "../../../components/form/Label";
 import Select from "../../../components/form/Select";
 import Input from "../../../components/form/input/InputField";
 import Textarea from "../../../components/form/input/TextArea";
+import DatePicker from "../../../components/form/date-picker";
 import { RentalPayment, RentalPaymentInputObject, PaymentMethod, PaymentType, PaymentStatus } from "../../../types/payments";
 import { HouseRental } from "../../../types/house-rentals";
 
@@ -90,7 +91,7 @@ export default function PaymentsModal({
   const resetForm = () => {
     setRentalUuid("");
     setAmount(null);
-    setPaymentDate("");
+    setPaymentDate(new Date().toISOString().split('T')[0]);
     setPaymentMethod("");
     setPaymentType("");
     setStatus("Completed");
@@ -126,6 +127,7 @@ export default function PaymentsModal({
             {isEditing ? "Update payment details" : "Record a new rental payment"}
           </p>
         </div>
+        
         <form className="flex flex-col">
           <div className="custom-scrollbar overflow-y-auto px-2 pb-3">
             <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
@@ -179,11 +181,11 @@ export default function PaymentsModal({
 
               <div className="col-span-2 lg:col-span-1">
                 <Label>Payment Date</Label>
-                <Input
-                  type="date"
+                <DatePicker
+                  id="payment-date"
                   placeholder="Select date"
                   value={paymentDate}
-                  onChange={(e) => setPaymentDate(e.target.value)}
+                  onChange={setPaymentDate}
                 />
               </div>
 
