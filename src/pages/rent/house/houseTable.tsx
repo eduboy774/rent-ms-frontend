@@ -38,6 +38,30 @@ export default function HouseTable({ houses, onDelete, onEdit }: HouseTableProps
       ),
     },
     {
+      header: "Location",
+      render: (house) => {
+        const ward = house.ward;
+        const council = ward?.wardParentCouncil ?? null;
+        const district = council?.councilParentDistrict ?? null;
+        const region = district?.districtParentRegion ?? null;
+
+        if (!ward) {
+          return <span className="text-sm text-gray-600 dark:text-gray-300">—</span>;
+        }
+
+        return (
+          <div className="flex flex-col">
+            <span className="text-sm text-gray-900 dark:text-white">{ward.wardName}</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {[council?.councilName, district?.districtName, region?.reginalName]
+                .filter(Boolean)
+                .join(", ")}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
       header: "Owner",
       render: (house) => (
         <span className="text-sm text-gray-600 dark:text-gray-300">

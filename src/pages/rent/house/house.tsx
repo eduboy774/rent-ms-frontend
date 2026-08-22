@@ -1,8 +1,9 @@
 import { useModal } from "../../../hooks/useModal";
 import { useState } from "react";
-import { GET_HOUSES, GET_USERS } from "../../../graphql/queries";
+import { GET_COUNCILS, GET_DISTRICTS, GET_HOUSES, GET_REGIONS, GET_USERS, GET_WARDS } from "../../../graphql/queries";
 import { useMutation, useQuery } from '@apollo/client';
 import type { CreateHouseVars, CreateHouseMutation, House, HouseFilteringInputObject, HouseInputObject, UserFilteringInputObject } from "../../../types/house";
+import type { Council, District, Region, Ward } from "../../../types/geography";
 import { ACTIVATE_OR_DEACTIVATE_HOUSE, CREATE_HOUSE, UPDATE_HOUSE } from "../../../graphql/mutation";
 import { useToast } from "../../../components/notifications/useToast";
 import ConfirmToast from "../../../components/notifications/confirmation";
@@ -20,9 +21,19 @@ export default function House() {
   const [ownerUuid, setOwnerUuid] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editingUuid, setEditingUuid] = useState<string | null>(null);
-  
+
+  // Location hierarchy: each selection is the filter for the level below it.
+  const [regionUuid, setRegionUuid] = useState<string | null>(null);
+  const [districtUuid, setDistrictUuid] = useState<string | null>(null);
+  const [councilUuid, setCouncilUuid] = useState<string | null>(null);
+  const [wardUuid, setWardUuid] = useState<string | null>(null);
+
   const [houses, setHouses] = useState<House[]>([]);
   const [owners, setOwners] = useState<any[]>([]);
+  const [regions, setRegions] = useState<Region[]>([]);
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [councils, setCouncils] = useState<Council[]>([]);
+  const [wards, setWards] = useState<Ward[]>([]);
 
   const [createHouse] = useMutation<CreateHouseMutation, CreateHouseVars>(CREATE_HOUSE);
   const [updateHouse] = useMutation(UPDATE_HOUSE);
@@ -47,6 +58,25 @@ const options = owners.map(user => ({
   value: user.profileUniqueId,
 }));
 
+const regionOptions = regions.map(region => ({
+  label: region.reginalName,
+  value: region.regionalUniqueId,
+}));
+
+const districtOptions = districts.map(district => ({
+  label: district.districtName,
+  value: district.districtUniqueId,
+}));
+
+const councilOptions = councils.map(council => ({
+  label: council.councilName,
+  value: council.councilUniqueId,
+}));
+
+const wardOptions = wards.map(ward => ({
+  label: ward.wardName,
+  value: ward.wardUniqueId,
+}));
 
 
 useQuery(GET_HOUSES, {
@@ -64,6 +94,74 @@ useQuery(GET_HOUSES, {
       setOwners(data?.getUsers?.data || []);
     }
   });
+
+  useQuery(GET_REGIONS, {
+    variables: { filtering: { uuid: null, name: null } },
+    fetchPolicy: "network-only",
+    onCompleted: (data) => {
+      setRegions(data?.getRegions?.data || []);
+    }
+  });
+
+  // Districts of the chosen region
+  useQuery(GET_DISTRICTS, {
+    variables: { filtering: { regionUuid } },
+    skip: !regionUuid,
+    fetchPolicy: "network-only",
+    onCompleted: (data) => {
+      setDistricts(data?.getDistricts?.data || []);
+    }
+  });
+
+  // Councils of the chosen district
+  useQuery(GET_COUNCILS, {
+    variables: { filtering: { districtUuid } },
+    skip: !districtUuid,
+    fetchPolicy: "network-only",
+    onCompleted: (data) => {
+      setCouncils(data?.getCouncils?.data || []);
+    }
+  });
+
+  // Wards of the chosen council — this is the value actually stored on the house
+  useQuery(GET_WARDS, {
+    variables: { filtering: { councilUuid } },
+    skip: !councilUuid,
+    fetchPolicy: "network-only",
+    onCompleted: (data) => {
+      setWards(data?.getWards?.data || []);
+    }
+  });
+
+
+ // Changing a level invalidates everything below it, so stale children are cleared.
+ const handleRegionChange = (value: string) => {
+   setRegionUuid(value || null);
+   setDistrictUuid(null);
+   setCouncilUuid(null);
+   setWardUuid(null);
+   setDistricts([]);
+   setCouncils([]);
+   setWards([]);
+ };
+
+ const handleDistrictChange = (value: string) => {
+   setDistrictUuid(value || null);
+   setCouncilUuid(null);
+   setWardUuid(null);
+   setCouncils([]);
+   setWards([]);
+ };
+
+ const handleCouncilChange = (value: string) => {
+   setCouncilUuid(value || null);
+   setWardUuid(null);
+   setWards([]);
+ };
+
+ const handleWardChange = (value: string) => {
+   setWardUuid(value || null);
+ };
 
 
  const handleDelete = (uuid: string) => {
@@ -103,6 +201,7 @@ useQuery(GET_HOUSES, {
     name:houseName,
     description: message,
     ownerUuid: ownerUuid,
+    wardUuid: wardUuid,
   };
 
 if(houseName && message){
@@ -148,6 +247,13 @@ if(houseName && message){
    setHouseName("");
    setMessage("");
    setOwnerUuid(null);
+   setRegionUuid(null);
+   setDistrictUuid(null);
+   setCouncilUuid(null);
+   setWardUuid(null);
+   setDistricts([]);
+   setCouncils([]);
+   setWards([]);
    setIsEditing(false);
    setEditingUuid(null);
  };
@@ -161,6 +267,18 @@ if(houseName && message){
    setHouseName(house.name || "");
    setMessage(house.description || "");
    setOwnerUuid(house.ownerUuid || house.ownerInfo?.profileUniqueId || null);
+
+   // Walk the stored ward back up the chain so every dropdown opens pre-selected.
+   const ward = house.ward;
+   const council = ward?.wardParentCouncil ?? null;
+   const district = council?.councilParentDistrict ?? null;
+   const region = district?.districtParentRegion ?? null;
+
+   setRegionUuid(region?.regionalUniqueId ?? null);
+   setDistrictUuid(district?.districtUniqueId ?? null);
+   setCouncilUuid(council?.councilUniqueId ?? null);
+   setWardUuid(ward?.wardUniqueId ?? null);
+
    setEditingUuid(house.uuid);
    setIsEditing(true);
    openModal();
@@ -183,7 +301,19 @@ if(houseName && message){
      setMessage={setMessage}
      owners ={options}
      ownerUuid={ownerUuid}
-     setOwnerUuid ={setOwnerUuid}  
+     setOwnerUuid ={setOwnerUuid}
+     regions={regionOptions}
+     regionUuid={regionUuid}
+     setRegionUuid={handleRegionChange}
+     districts={districtOptions}
+     districtUuid={districtUuid}
+     setDistrictUuid={handleDistrictChange}
+     councils={councilOptions}
+     councilUuid={councilUuid}
+     setCouncilUuid={handleCouncilChange}
+     wards={wardOptions}
+     wardUuid={wardUuid}
+     setWardUuid={handleWardChange}
      onSave={handleSave}
      isEditing={isEditing}
      />

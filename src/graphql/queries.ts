@@ -98,6 +98,26 @@ query GetHouses($filtering: HouseFilteringInputObject) {
         profileGender
       }
       description
+      ward {
+        id
+        wardUniqueId
+        wardName
+        wardParentCouncil {
+          id
+          councilUniqueId
+          councilName
+          councilParentDistrict {
+            id
+            districtUniqueId
+            districtName
+            districtParentRegion {
+              id
+              regionalUniqueId
+              reginalName
+            }
+          }
+        }
+      }
       isActive
     }
     response {
@@ -409,6 +429,56 @@ query GetRegions($filtering: RegionFilteringInputObject) {
       reginalPostcode
       reginalNapaId
       reginalCode
+    }
+    response {
+      id
+      status
+      code
+      message
+    }
+  }
+}
+`;
+
+export const GET_COUNCILS = gql`
+query GetCouncils($filtering: CouncilFilteringInputObject) {
+  getCouncils(filtering: $filtering) {
+    data {
+      id
+      councilUniqueId
+      councilName
+      councilPostcode
+      councilNapaId
+      councilParentDistrict {
+        id
+        districtUniqueId
+        districtName
+      }
+    }
+    response {
+      id
+      status
+      code
+      message
+    }
+  }
+}
+`;
+
+export const GET_WARDS = gql`
+query GetWards($filtering: WardFilteringInputObject) {
+  getWards(filtering: $filtering) {
+    data {
+      id
+      wardUniqueId
+      wardName
+      wardPostcode
+      wardNapaId
+      wardParentCouncil {
+        id
+        councilUniqueId
+        councilName
+      }
     }
     response {
       id

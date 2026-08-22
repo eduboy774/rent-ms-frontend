@@ -17,9 +17,21 @@ type HouseModalProps = {
   setHouseName: (val: string) => void;
   message: string;
   setMessage: (val: string) => void;
-  owners: SelectOption[];       
-  ownerUuid: string | null;      
+  owners: SelectOption[];
+  ownerUuid: string | null;
   setOwnerUuid: (val: string) => void;
+  regions: SelectOption[];
+  regionUuid: string | null;
+  setRegionUuid: (val: string) => void;
+  districts: SelectOption[];
+  districtUuid: string | null;
+  setDistrictUuid: (val: string) => void;
+  councils: SelectOption[];
+  councilUuid: string | null;
+  setCouncilUuid: (val: string) => void;
+  wards: SelectOption[];
+  wardUuid: string | null;
+  setWardUuid: (val: string) => void;
   onSave: () => void;
   isEditing?: boolean;
 };
@@ -34,15 +46,23 @@ export default function HouseModal({
   owners,
   ownerUuid,
   setOwnerUuid,
+  regions,
+  regionUuid,
+  setRegionUuid,
+  districts,
+  districtUuid,
+  setDistrictUuid,
+  councils,
+  councilUuid,
+  setCouncilUuid,
+  wards,
+  wardUuid,
+  setWardUuid,
   onSave,
   isEditing = false,
 }: HouseModalProps) {
-
-
-
-
-
-
+  // Each level unlocks only once its parent is chosen, so the user cannot pick a
+  // ward that belongs to a different council than the one selected above it.
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] m-4">
       <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
@@ -55,7 +75,7 @@ export default function HouseModal({
           <div className="custom-scrollbar overflow-y-auto px-2 pb-3">
             <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
               <div className="col-span-2">
-                <Label>Housee Name</Label>
+                <Label>House Name</Label>
                 <Input
                   type="text"
                   value={houseName}
@@ -64,13 +84,66 @@ export default function HouseModal({
               </div>
               <div className="col-span-2">
                 <Label>Select Owner</Label>
-              <Select
-                options={owners}
-                placeholder="Select Owner"
-                value={ownerUuid ?? ""}
-                onChange={setOwnerUuid}
-              />
+                <Select
+                  options={owners}
+                  placeholder="Select Owner"
+                  value={ownerUuid ?? ""}
+                  onChange={setOwnerUuid}
+                />
               </div>
+
+              <div className="col-span-2">
+                <h5 className="mt-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Location
+                </h5>
+              </div>
+
+              <div className="col-span-2 lg:col-span-1">
+                <Label>Region</Label>
+                <Select
+                  options={regions}
+                  placeholder="Select Region"
+                  value={regionUuid ?? ""}
+                  onChange={setRegionUuid}
+                />
+              </div>
+
+              <div className="col-span-2 lg:col-span-1">
+                <Label>District</Label>
+                <Select
+                  key={`district-${regionUuid ?? "none"}`}
+                  options={districts}
+                  placeholder={regionUuid ? "Select District" : "Select a region first"}
+                  value={districtUuid ?? ""}
+                  onChange={setDistrictUuid}
+                  className={!regionUuid ? "cursor-not-allowed opacity-60" : ""}
+                />
+              </div>
+
+              <div className="col-span-2 lg:col-span-1">
+                <Label>Council</Label>
+                <Select
+                  key={`council-${districtUuid ?? "none"}`}
+                  options={councils}
+                  placeholder={districtUuid ? "Select Council" : "Select a district first"}
+                  value={councilUuid ?? ""}
+                  onChange={setCouncilUuid}
+                  className={!districtUuid ? "cursor-not-allowed opacity-60" : ""}
+                />
+              </div>
+
+              <div className="col-span-2 lg:col-span-1">
+                <Label>Ward</Label>
+                <Select
+                  key={`ward-${councilUuid ?? "none"}`}
+                  options={wards}
+                  placeholder={councilUuid ? "Select Ward" : "Select a council first"}
+                  value={wardUuid ?? ""}
+                  onChange={setWardUuid}
+                  className={!councilUuid ? "cursor-not-allowed opacity-60" : ""}
+                />
+              </div>
+
               <div className="col-span-2">
                 <Label>House Description</Label>
                 <TextArea
@@ -79,7 +152,6 @@ export default function HouseModal({
                   rows={2}
                 />
               </div>
-
             </div>
           </div>
           <div className="flex items-center gap-3 px-2 lg:justify-end">

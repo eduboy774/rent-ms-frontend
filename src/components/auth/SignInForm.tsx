@@ -5,12 +5,16 @@ import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Button from "../ui/button/Button";
 import { useSignIn } from "./useSignIn";
+import { getDevCredentials } from "../../store/devCredentials";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function SignInForm() {
+  // Prefilled while developing; empty in a production build.
+  const devCredentials = getDevCredentials();
+
   const [showPassword, setShowPassword] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
+  const [userName, setUserName] = useState(devCredentials.username);
+  const [password, setPassword] = useState(devCredentials.password);
   const { authenticate } = useSignIn();
 
   const handleSubmit = (e: React.FormEvent) => {

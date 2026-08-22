@@ -1,5 +1,6 @@
 import { ResponseObject } from "./base";
 import { User } from "./users";
+import { Ward } from "./geography";
 
 export interface House {
   id: string;
@@ -7,6 +8,7 @@ export interface House {
   name: string;
   ownerInfo: User;
   description: string;
+  ward: Ward | null;
   isActive: boolean;
   ownerUuid:string | null;
   __typename: string;
@@ -25,6 +27,7 @@ export interface UserFilteringInputObject {
 export interface HouseInputObject {
   uuid?: string | null;
   ownerUuid?: string | null;
+  wardUuid?: string | null;
   name?: string | null;
   description?: string | null;
 }

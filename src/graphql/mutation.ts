@@ -31,6 +31,26 @@ mutation CreateHouseMutation($input: HouseInputObject) {
         profileGender
       }
       description
+      ward {
+        id
+        wardUniqueId
+        wardName
+        wardParentCouncil {
+          id
+          councilUniqueId
+          councilName
+          councilParentDistrict {
+            id
+            districtUniqueId
+            districtName
+            districtParentRegion {
+              id
+              regionalUniqueId
+              reginalName
+            }
+          }
+        }
+      }
       isActive
     }
   }
@@ -97,6 +117,26 @@ mutation UpdateHouseMutation($input: HouseInputObject) {
       }
       address
       description
+      ward {
+        id
+        wardUniqueId
+        wardName
+        wardParentCouncil {
+          id
+          councilUniqueId
+          councilName
+          councilParentDistrict {
+            id
+            districtUniqueId
+            districtName
+            districtParentRegion {
+              id
+              regionalUniqueId
+              reginalName
+            }
+          }
+        }
+      }
       isActive
     }
   }
